@@ -1,0 +1,26 @@
+<?php
+
+namespace {{namespace_php}}\Badges;
+
+use Syehan\Gamify\Classes\BadgeType;
+
+class {{studly_name}} extends BadgeType
+{
+    /**
+     * Description for badge
+     *
+     * @var string
+     */
+    protected $description = '';
+
+    /**
+     * Check is user qualifies for badge
+     *
+     * @param $user
+     * @return bool
+     */
+    public function qualifier($user)
+    {
+        return $user->getPoints() >= 1000;
+    }
+}

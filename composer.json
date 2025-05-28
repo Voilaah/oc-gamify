@@ -1,0 +1,46 @@
+{
+  "name": "syehan/gamify-plugin",
+  "description": "Add gamification in OctoberCMS with reputation point and badges support",
+  "homepage": "https://github.com/syehan/gamify-plugin",
+  "type": "october-plugin",
+  "license": "MIT",
+  "keywords": [
+    "qcod",
+    "syehan",
+    "laravel",
+    "october",
+    "octobercms",
+    "achivement",
+    "gamify",
+    "gamification",
+    "reputation",
+    "points",
+    "badge",
+    "reward"
+  ],
+  "authors": [
+    {
+      "name": "Mohd Saqueib Ansari",
+      "email": "saquibweb@gmail.com"
+    },
+    {
+      "name": "Syehan",
+      "email": "sehanlim@outlook.com"
+    }
+  ],
+  "require": {
+    "php": "^7.3|^8.0",
+    "october/rain": "^2.0|^3.0",
+    "rainlab/user-plugin": "^3.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "~3.8|^4.0|^5.0|^7.0",
+    "mockery/mockery": "^0.9.4 || ~1.0",
+    "phpunit/phpunit": "~8.5|^9.0"
+  },
+  "autoload": {
+    "files": [
+      "helpers.php"
+    ]
+  }
+}
