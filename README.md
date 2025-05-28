@@ -1,7 +1,13 @@
-## OctoberCMS Gamify  🕹 🏆
+## OctoberCMS Gamify 🕹 🏆
+
+This is a fork with fixes of the [gamify plugin](https://github.com/syehan/gamify-plugin).
+
+### Fixes:
+
+- use `RainLab.User` v3
+- fix the `config/gamify.php` php code reading the `.env` variables `GAMIFY_BADGE_LEVELS`
 
 Use `syehan/gamify-plugin` to add reputation point &amp; badges in your OctoberCMS.
-
 
 ### Installation
 
@@ -10,13 +16,14 @@ Use `syehan/gamify-plugin` to add reputation point &amp; badges in your OctoberC
 ```bash
 $ composer require syehan/gamify-plugin
 ```
+
 **2** - Now publish the migration for gamify tables:
 
 ```
 php artisan october:migrate
 ```
 
-*Note:* It will generate migration for `syehan_gamify_reputations`, `syehan_gamify_badges` and `syehan_gamify_user_badges` tables along with add reputation field migration for `users` table to store the points, you will need to run `composer require doctrine/dbal` in order to support dropping and adding columns.
+_Note:_ It will generate migration for `syehan_gamify_reputations`, `syehan_gamify_badges` and `syehan_gamify_user_badges` tables along with add reputation field migration for `users` table to store the points, you will need to run `composer require doctrine/dbal` in order to support dropping and adding columns.
 
 If your payee (model who will be getting the points) model is `RainLab\User\Models\User` then you don't have to change anything in `config/gamify.php`.
 
@@ -28,7 +35,7 @@ If your payee (model who will be getting the points) model is `RainLab\User\Mode
 return [
     // Auth Base, available \Auth or \BackendAuth
     'auth_base' => env('GAMIFY_AUTH_BASE', \Auth::class),
-    
+
     // Model which will be having points, generally it will be User
     'payee_model' => '\RainLab\User\Models\User',
 
@@ -66,9 +73,11 @@ return [
 ```
 
 ## Autoload Helpers
+
 to supporting easy gamify helpers, like `givePoint()` or `undoPoint()`, please make sure you already autoload helpers.php in your `composer.json` root.
 
-here's the example : 
+here's the example :
+
 ```json
 "autoload": {
     "psr-4": {
@@ -199,19 +208,19 @@ Since package stores all the reputation event log so you can get the history of 
 
 ```php
 foreach($user->reputations as $reputation) {
-    // name of the point type 
+    // name of the point type
     $reputation->name
-    
+
     // payee user
     $reputation->payee
-    
+
     // how many points
     $reputation->point
-    
-    // model on which point was given 
+
+    // model on which point was given
     $reputation->subject
 }
-``` 
+```
 
 If you want to get all the points given on a `subject` model. You should define a `morphMany` relations. For example on post model.
 
@@ -230,16 +239,17 @@ Now you can get all the reputation given on a `Post` using `$post->reputations`.
 ### Configure a Point Type
 
 #### Point payee
+
 In most of the case your subject model which you pass into point `new PostCreated($post)` will be related to the User via some relation.
 
 ```php
 class PostCreated extends PointType
 {
     public $points = 20;
-    
+
     protected $payee = 'user';
-    
-    // dont need this, payee property will return subject realtion 
+
+    // dont need this, payee property will return subject realtion
     // public function payee()
     // {
     //    return $this->getSubject()->user;
@@ -255,7 +265,7 @@ If a point is calculated based on some logic you should add `getPoints()` method
 class PostCreated extends PointType
 {
     protected $payee = 'user';
-    
+
     public function getPoints()
     {
         return $this->getSubject()->user->getPoint() * 10;
@@ -265,7 +275,7 @@ class PostCreated extends PointType
 
 #### Point qualifier
 
-This is an optional method which returns boolean if its true then this point will be given else it will be ignored. 
+This is an optional method which returns boolean if its true then this point will be given else it will be ignored.
 It's will be helpful if you want to determine the qualification for point dynamically.
 
 #### Prevent duplicate reputation
@@ -288,7 +298,7 @@ Whenever user point changes it fires `\Syehan\Gamify\Events\ReputationChanged` e
 
 ```php
 class ReputationChanged implements ShouldBroadcast {
-    
+
     ...
     public function __construct(Model $user, int $point, bool $increment)
     {
@@ -317,7 +327,7 @@ Similar to Point type you have badges. They can be given to users based on rank 
 'badge_default_level' => 1
 ```
 
-Badge levels are stored as `tinyint` so keep the value as an integer value. It will be faster to do the sorting when needed. 
+Badge levels are stored as `tinyint` so keep the value as an integer value. It will be faster to do the sorting when needed.
 
 ### Create a Badge
 
@@ -358,17 +368,17 @@ class FirstContribution extends BadgeType
 }
 ```
 
-As you can see this badge has a `$description` field and a `qualifier($user)` method. 
+As you can see this badge has a `$description` field and a `qualifier($user)` method.
 Gamify package will listen for any change in reputation point and it will run the user against all the available badges and assign all the badges user is qualified.
 
 #### Change badge name
 
-By default, badge name will be a pretty version on the badge class name. In the above case it will be `First Contribution`. 
+By default, badge name will be a pretty version on the badge class name. In the above case it will be `First Contribution`.
 You can change it by adding a `$name` property in class or you can override `getName()` method if you want to name it dynamically.
 
 #### Change badge icon
 
-Similar to name you can change it by `$icon` property or by `getIcon()` method. When you define icon on the class you need to specify full path with extension. 
+Similar to name you can change it by `$icon` property or by `getIcon()` method. When you define icon on the class you need to specify full path with extension.
 `config/gamify.php` folder `badge_icon_folder` and `badge_icon_extension` won't be used.
 
 #### Change badge level
@@ -376,14 +386,15 @@ Similar to name you can change it by `$icon` property or by `getIcon()` method. 
 You have same `$level` property or by `getLevel()` method to change it.
 Its like category of badges, all badges are defined in `config/gamify.php` as `badge_levels`. If none is specified then `badge_default_level` will be used from config.
 
-**Warning ⚠️** Don't forget to clear the cache whenever you make any changes add or remove badges by running `php artisan cache:forget gamify.badges.all`. ⚠️ 
+**Warning ⚠️** Don't forget to clear the cache whenever you make any changes add or remove badges by running `php artisan cache:forget gamify.badges.all`. ⚠️
 
 #### Get badges of user
+
 You can get a users badges by calling `$user->badges` which will return collection of badges for a user.
 
 ### Use without Badge
 
-If your app doesn't need **Badges** you should just use `HasReputations` trait instead of `Gamify`.  
+If your app doesn't need **Badges** you should just use `HasReputations` trait instead of `Gamify`.
 
 ### Use without reputation history
 
@@ -400,7 +411,7 @@ $user->reducePoint($point = 1);
 $user->resetPoint();
 ```
 
-You dont need to generate point class for this.  
+You dont need to generate point class for this.
 
 ### Testing
 
