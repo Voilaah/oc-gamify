@@ -11,7 +11,7 @@ trait HasBadges
      */
     public static function bootHasBadges()
     {
-        static::extend(function($model) {
+        static::extend(function ($model) {
 
             /**
              * Badges user relation
