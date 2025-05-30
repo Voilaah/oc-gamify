@@ -111,14 +111,10 @@ class Plugin extends PluginBase
      */
     protected function getBadges()
     {
-        traceLog('getBadges');
-
         $badgeRootNamespace = config(
             'gamify.badge_namespace',
             __NAMESPACE__ . '\Badges'
         );
-
-        traceLog($badgeRootNamespace);
 
         $badges = [];
 
