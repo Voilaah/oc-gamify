@@ -3,6 +3,8 @@
 namespace Syehan\Gamify\Models;
 
 use Model;
+use Syehan\Gamify\Events\BadgeAwarded;
+use Syehan\Gamify\Events\BadgeRemoved;
 
 class Badge extends Model
 {
@@ -35,6 +37,9 @@ class Badge extends Model
     public function awardTo($user)
     {
         $this->users()->attach($user);
+
+        BadgeAwarded::dispatch($user, $this->id);
+
     }
 
     /**
@@ -45,5 +50,8 @@ class Badge extends Model
     public function removeFrom($user)
     {
         $this->users()->detach($user);
+
+        BadgeRemoved::dispatch($user, $this->id);
+
     }
 }

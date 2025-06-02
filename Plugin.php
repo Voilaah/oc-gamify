@@ -2,7 +2,7 @@
 
 namespace Syehan\Gamify;
 
-use Backend, Event, Cache;
+use Backend, Event;
 use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
 use Syehan\Gamify\Console\MakeBadgeCommand;
@@ -44,11 +44,11 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('syehan.gamify_badge', MakeBadgeCommand::class);
 
         $this->app->singleton('badges', function () {
-            // return cache()->rememberForever('gamify.badges.all', function () {
-            return $this->getBadges()->map(function ($badge) {
-                return new $badge;
+            return cache()->rememberForever('gamify.badges.all', function () {
+                return $this->getBadges()->map(function ($badge) {
+                    return new $badge;
+                });
             });
-            // });
         });
     }
 
@@ -121,13 +121,12 @@ class Plugin extends PluginBase
         );
 
         $path = str_replace('\\', '/', strtolower($badgeRootNamespace));
-        $path .=  '/';
+        $path .= '/';
 
         $badges = [];
 
         // foreach (glob(plugins_path('/syehan/gamify/badges/') . '*.php') as $file) {
         foreach (glob(plugins_path($path) . '*.php') as $file) {
-            traceLog($file);
             if (is_file($file)) {
                 $badges[] = app($badgeRootNamespace . '\\' . pathinfo($file, PATHINFO_FILENAME));
             }

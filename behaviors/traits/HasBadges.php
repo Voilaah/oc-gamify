@@ -2,6 +2,9 @@
 
 namespace Syehan\Gamify\Behaviors\Traits;
 
+use Syehan\Gamify\Events\BadgeAwarded;
+use Syehan\Gamify\Events\BadgeRemoved;
+
 trait HasBadges
 {
     /**
@@ -17,6 +20,34 @@ trait HasBadges
             ->qualifier($user)
             ->map->getBadgeId();
 
-        $user->badges()->sync($badgeIds);
+        $ids = $user->badges()->syncWithPivotValues(
+            $badgeIds,
+            [
+                'created_at' => \Carbon\Carbon::now(),
+                // 'updated_at' => \Carbon\Carbon::now(),
+            ]
+        );
+
+        // trace_log($ids);
+
+        /**
+         * array $ids = [
+         * 'attached' =>[],
+         * 'detached' =>[],
+         * 'updated' =>[],
+         * ]
+         */
+
+        if (!empty($ids['attached'])) {
+            foreach ($ids['attached'] as $badgeId) {
+                BadgeAwarded::dispatch($user, $badgeId);
+            }
+        }
+
+        if (!empty($ids['detached'])) {
+            foreach ($ids['detached'] as $badgeId) {
+                BadgeRemoved::dispatch($user, $badgeId);
+            }
+        }
     }
 }
