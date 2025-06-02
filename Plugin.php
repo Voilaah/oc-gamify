@@ -69,7 +69,6 @@ class Plugin extends PluginBase
         // register event listener
         Event::listen(ReputationChanged::class, SyncBadges::class);
 
-
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();
         $this->bindBehaviorsBackendUser();
