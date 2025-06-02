@@ -1,7 +1,9 @@
 <?php
+
 namespace Syehan\Gamify;
 
-use Backend, Event;
+use Backend, Event, Cache;
+use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
 use Syehan\Gamify\Console\MakeBadgeCommand;
 use Syehan\Gamify\Console\MakePointCommand;
@@ -42,11 +44,11 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('syehan.gamify_badge', MakeBadgeCommand::class);
 
         $this->app->singleton('badges', function () {
-            return cache()->rememberForever('gamify.badges.all', function () {
-                return $this->getBadges()->map(function ($badge) {
-                    return new $badge;
-                });
+            // return cache()->rememberForever('gamify.badges.all', function () {
+            return $this->getBadges()->map(function ($badge) {
+                return new $badge;
             });
+            // });
         });
     }
 
@@ -66,6 +68,7 @@ class Plugin extends PluginBase
 
         // register event listener
         Event::listen(ReputationChanged::class, SyncBadges::class);
+
 
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();
@@ -111,19 +114,26 @@ class Plugin extends PluginBase
      */
     protected function getBadges()
     {
+
         $badgeRootNamespace = config(
             'gamify.badge_namespace',
             __NAMESPACE__ . '\Badges'
         );
 
+        $path = str_replace('\\', '/', strtolower($badgeRootNamespace));
+        $path .=  '/';
+
         $badges = [];
 
-        foreach (glob(plugins_path('/syehan/gamify/badges/') . '*.php') as $file) {
+        // foreach (glob(plugins_path('/syehan/gamify/badges/') . '*.php') as $file) {
+        foreach (glob(plugins_path($path) . '*.php') as $file) {
+            traceLog($file);
             if (is_file($file)) {
                 $badges[] = app($badgeRootNamespace . '\\' . pathinfo($file, PATHINFO_FILENAME));
             }
         }
 
+        // traceLog(collect($badges)->toArray());
         return collect($badges);
     }
 

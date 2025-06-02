@@ -37,8 +37,11 @@ return [
             'beginner' => 1,
             'intermediate' => 2,
             'advanced' => 3,
+            'expert' => 4,
         ],
 
     // Default level
-    'badge_default_level' => env('GAMIFY_BADGE_DEFAULT_LEVEL', 1)
+    'badge_default_level' => env('GAMIFY_BADGE_DEFAULT_LEVEL', 1),
+
+    'badge_namespace' => env('GAMIFY_BADGE_NAMESPACE', 'App\Badges'),
 ];
