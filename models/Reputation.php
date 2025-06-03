@@ -47,4 +47,9 @@ class Reputation extends Model
             $this->delete();
         }
     }
+
+    public function scopePayeeId($query, $payeeId)
+    {
+        return $query->where('payee_id', $payeeId);
+    }
 }

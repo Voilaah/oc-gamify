@@ -1,0 +1,48 @@
+<table class="min-w-full divide-y divide-black-300">
+    <thead>
+        <tr>
+            <th
+                scope="col"
+                class="py-3.5 pr-3 pl-4 text-left sktext-sm lg:sktext-sm-lg font-semibold whitespace-nowrap text-text-primary sm:pl-0"
+            >
+                {{ 'User action' | trans }}
+            </th>
+            {#
+            <th scope="col" class="px-2 py-3.5 text-left sktext-sm lg:sktext-sm-lg font-semibold whitespace-nowrap text-gray-900">
+                {{ 'User action' | trans }}
+            </th> #}
+            <th
+                scope="col"
+                class="px-2 py-3.5 text-left sktext-sm lg:sktext-sm-lg font-semibold whitespace-nowrap text-gray-900"
+            >
+                {{ 'Earned Points' | trans }}
+            </th>
+            <th
+                scope="col"
+                class="py-2 pl-0 pr-4 font-semibold text-right sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
+            >
+                {{ 'Earned at' | trans }}
+            </th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-black-200">
+        {% for item in __SELF__.items %}
+            <tr>
+                <td class="py-2 pl-4 pr-3 text-black-500 sktext-sm lg:sktext-sm-lg whitespace-nowrap sm:pl-0">
+                    {{ item.name }}
+                </td>
+                {# <td class="px-2 py-2 font-medium text-black-900 sktext-sm lg:sktext-sm-lg whitespace-nowrap">{{ item.subject.reputation_name }}</td> #}
+                <td class="px-2 py-2 text-black-500 whitespace-nowrap sktext-sm lg:sktext-sm-lg sm:pr-0">
+                    {{ item.point }}
+                </td>
+                <td
+                    class="py-2 pl-0 pr-4 text-right text-black-400 sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
+                >
+                    <time datetime="2023-01-23T11:00">{{ item.created_at | date('F jS Y \\a\\t h:i A') }}</time>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% partial __SELF__ ~ '::pagination' %}

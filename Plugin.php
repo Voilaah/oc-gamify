@@ -6,6 +6,7 @@ use Backend, Event;
 use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
+use Voilaah\Gamify\Components\Points;
 use Voilaah\Gamify\Listeners\SyncBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
@@ -66,6 +67,7 @@ class Plugin extends PluginBase
     {
         return [
             UserActivityTracker::class => 'userActivityTracker',
+            Points::class => 'points',
         ];
     }
 

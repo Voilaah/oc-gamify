@@ -25,7 +25,8 @@ class UserGamifyBehavior extends ExtensionBase
 
         $model->hasMany['reputations'] = [
             config('gamify.reputation_model'),
-            'key' => 'payee_id'
+            'key' => 'payee_id',
+            'order' => 'created_at desc',
         ];
     }
 }
