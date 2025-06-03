@@ -1,8 +1,8 @@
 <?php
 
-namespace Syehan\Gamify\Tests\Models;
+namespace Voilaah\Gamify\Tests\Models;
 
-use Syehan\Gamify\Gamify;
+use Voilaah\Gamify\Gamify;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model

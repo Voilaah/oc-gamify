@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Console;
+namespace Voilaah\Gamify\Console;
 
 use October\Rain\Scaffold\GeneratorCommandBase;
 
@@ -11,7 +11,7 @@ class MakeBadgeCommand extends GeneratorCommandBase
      *
      * @var string
      */
-    protected $signature = 'syehan:gamify-badge {namespace : App or Plugin Namespace (eg: Acme.Blog)} 
+    protected $signature = 'voilaah:gamify-badge {namespace : App or Plugin Namespace (eg: Acme.Blog)}
     {name : The name of the Badge. Eg: FirstContribution}
     {--o|overwrite : Overwrite existing files with generated ones}';
 

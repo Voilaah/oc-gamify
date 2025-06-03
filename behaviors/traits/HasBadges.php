@@ -1,9 +1,9 @@
 <?php
 
-namespace Syehan\Gamify\Behaviors\Traits;
+namespace Voilaah\Gamify\Behaviors\Traits;
 
-use Syehan\Gamify\Events\BadgeAwarded;
-use Syehan\Gamify\Events\BadgeRemoved;
+use Voilaah\Gamify\Events\BadgeAwarded;
+use Voilaah\Gamify\Events\BadgeRemoved;
 
 trait HasBadges
 {

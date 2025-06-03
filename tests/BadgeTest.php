@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Tests;
+namespace Voilaah\Gamify\Tests;
 
 class BadgeTest extends TestCase
 {

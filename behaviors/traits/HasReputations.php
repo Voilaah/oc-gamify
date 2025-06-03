@@ -1,9 +1,9 @@
 <?php
 
-namespace Syehan\Gamify\Behaviors\Traits;
+namespace Voilaah\Gamify\Behaviors\Traits;
 
-use Syehan\Gamify\Events\ReputationChanged;
-use Syehan\Gamify\Classes\PointType;
+use Voilaah\Gamify\Events\ReputationChanged;
+use Voilaah\Gamify\Classes\PointType;
 
 trait HasReputations
 {
@@ -128,7 +128,7 @@ trait HasReputations
     {
         return property_exists($this->model, 'reputationColumn')
             ? $this->model->reputationColumn
-            : 'syehan_gamify_reputation';
+            : 'voilaah_gamify_reputation';
     }
 
     /**

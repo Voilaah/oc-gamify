@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Events;
+namespace Voilaah\Gamify\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -48,7 +48,7 @@ class ReputationChanged implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        if(config('gamify.enable_broadcast', false)){
+        if (config('gamify.enable_broadcast', false)) {
             $channelName = config('gamify.channel_name') . $this->user->getKey();
 
             if (config('gamify.broadcast_on_private_channel')) {

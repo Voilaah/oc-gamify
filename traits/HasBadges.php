@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Traits;
+namespace Voilaah\Gamify\Traits;
 
 trait HasBadges
 {
@@ -20,7 +20,7 @@ trait HasBadges
              */
             $model->belongsToMany['badges'] = [
                 config('gamify.badge_model'),
-                'table' => 'syehan_gamify_user_badges',
+                'table' => 'voilaah_gamify_user_badges',
                 'timestamps' => true
             ];
         });

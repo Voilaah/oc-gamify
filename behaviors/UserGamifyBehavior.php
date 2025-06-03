@@ -1,13 +1,13 @@
 <?php
 
-namespace Syehan\Gamify\Behaviors;
+namespace Voilaah\Gamify\Behaviors;
 
 use October\Rain\Extension\ExtensionBase;
 
 class UserGamifyBehavior extends ExtensionBase
 {
-    use \Syehan\Gamify\Behaviors\Traits\Gamify;
-    
+    use \Voilaah\Gamify\Behaviors\Traits\Gamify;
+
     protected $model;
 
     public function __construct($model)
@@ -20,7 +20,7 @@ class UserGamifyBehavior extends ExtensionBase
     {
         $model->belongsToMany['badges'] = [
             config('gamify.badge_model'),
-            'table' => 'syehan_gamify_user_badges'
+            'table' => 'voilaah_gamify_user_badges'
         ];
 
         $model->hasMany['reputations'] = [

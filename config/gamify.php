@@ -8,7 +8,7 @@ return [
     'payee_model' => env('GAMIFY_PAYEE_MODEL', \RainLab\User\Models\User::class),
 
     // Reputation model
-    'reputation_model' => env('GAMIFY_REPUTATION_MODEL', \Syehan\Gamify\Models\Reputation::class),
+    'reputation_model' => env('GAMIFY_REPUTATION_MODEL', \Voilaah\Gamify\Models\Reputation::class),
 
     // Allow duplicate reputation points
     'allow_reputation_duplicate' => env('GAMIFY_ALLOW_REPUTATION_DUPLICATE', false),
@@ -20,7 +20,7 @@ return [
     'channel_name' => env('GAMIFY_CHANNEL_NAME', null),
 
     // Badge model
-    'badge_model' => env('GAMIFY_BADGE_MODEL', \Syehan\Gamify\Models\Badge::class),
+    'badge_model' => env('GAMIFY_BADGE_MODEL', \Voilaah\Gamify\Models\Badge::class),
 
     // Where all badges icon stored
     'badge_icon_folder' => env('GAMIFY_BADGE_ICON_FOLDER', 'images/badges/'),

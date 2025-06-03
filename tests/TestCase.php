@@ -1,10 +1,10 @@
 <?php
 
-namespace Syehan\Gamify\Tests;
+namespace Voilaah\Gamify\Tests;
 
-use Syehan\Gamify\Badge;
-use Syehan\Gamify\Tests\Models\Post;
-use Syehan\Gamify\Tests\Models\User;
+use Voilaah\Gamify\Badge;
+use Voilaah\Gamify\Tests\Models\Post;
+use Voilaah\Gamify\Tests\Models\User;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
@@ -31,13 +31,13 @@ abstract class TestCase extends OrchestraTestCase
             'prefix' => '',
         ]);
 
-        $app['config']->set('gamify.payee_model', '\Syehan\Gamify\Tests\Models\User');
+        $app['config']->set('gamify.payee_model', '\Voilaah\Gamify\Tests\Models\User');
 
         // test badges
         $app->singleton('badges', function () {
             return collect(['FirstContribution', 'FirstThousandPoints'])
                 ->map(function ($badge) {
-                    return app("Syehan\\Gamify\\Tests\Badges\\".$badge);
+                    return app("Voilaah\\Gamify\\Tests\Badges\\" . $badge);
                 });
         });
     }
@@ -48,7 +48,7 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function getPackageProviders($app)
     {
-        return ['Syehan\Gamify\GamifyServiceProvider'];
+        return ['Voilaah\Gamify\GamifyServiceProvider'];
     }
 
     /**

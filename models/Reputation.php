@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Models;
+namespace Voilaah\Gamify\Models;
 
 use Model;
 
@@ -9,7 +9,7 @@ class Reputation extends Model
     /**
      * @var string The database table used by the model.
      */
-    protected $table = 'syehan_gamify_reputations';
+    protected $table = 'voilaah_gamify_reputations';
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
@@ -19,7 +19,7 @@ class Reputation extends Model
 
         /**
          * Payee User
-         * 
+         *
          * @return October\Rain\Database\Relations\BelongsToMany
          */
         $this->belongsTo['payee'] = [
@@ -29,7 +29,7 @@ class Reputation extends Model
 
         /**
          * Get the owning subject model
-         * 
+         *
          * @return October\Rain\Database\Relations\MorphTo
          */
         $this->morphTo['subject'] = [];

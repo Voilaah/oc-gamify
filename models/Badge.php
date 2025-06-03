@@ -1,17 +1,17 @@
 <?php
 
-namespace Syehan\Gamify\Models;
+namespace Voilaah\Gamify\Models;
 
 use Model;
-use Syehan\Gamify\Events\BadgeAwarded;
-use Syehan\Gamify\Events\BadgeRemoved;
+use Voilaah\Gamify\Events\BadgeAwarded;
+use Voilaah\Gamify\Events\BadgeRemoved;
 
 class Badge extends Model
 {
     /**
      * @var string The database table used by the model.
      */
-    protected $table = 'syehan_gamify_badges';
+    protected $table = 'voilaah_gamify_badges';
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
@@ -24,7 +24,7 @@ class Badge extends Model
          */
         $this->belongsToMany['users'] = [
             config('gamify.payee_model'),
-            'table' => 'syehan_gamify_user_badges',
+            'table' => 'voilaah_gamify_user_badges',
             'timestamps' => true
         ];
     }

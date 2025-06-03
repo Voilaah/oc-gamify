@@ -2,7 +2,7 @@
 
 namespace {{namespace_php}}\Badges;
 
-use Syehan\Gamify\Classes\BadgeType;
+use Voilaah\Gamify\Classes\BadgeType;
 
 class {{studly_name}} extends BadgeType
 {

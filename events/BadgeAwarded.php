@@ -1,8 +1,8 @@
 <?php
 
-namespace Syehan\Gamify\Events;
+namespace Voilaah\Gamify\Events;
 
-use Syehan\Gamify\Models\Badge;
+use Voilaah\Gamify\Models\Badge;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;

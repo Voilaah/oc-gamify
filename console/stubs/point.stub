@@ -2,7 +2,7 @@
 
 namespace {{namespace_php}}\Points;
 
-use Syehan\Gamify\Classes\PointType;
+use Voilaah\Gamify\Classes\PointType;
 
 class {{studly_name}} extends PointType
 {

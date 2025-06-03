@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Classes;
+namespace Voilaah\Gamify\Classes;
 
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;

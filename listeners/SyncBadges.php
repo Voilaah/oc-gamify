@@ -1,8 +1,8 @@
 <?php
 
-namespace Syehan\Gamify\Listeners;
+namespace Voilaah\Gamify\Listeners;
 
-use Syehan\Gamify\Events\ReputationChanged;
+use Voilaah\Gamify\Events\ReputationChanged;
 
 class SyncBadges
 {

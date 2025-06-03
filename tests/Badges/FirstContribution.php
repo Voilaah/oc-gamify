@@ -1,9 +1,9 @@
 <?php
 
-namespace Syehan\Gamify\Tests\Badges;
+namespace Voilaah\Gamify\Tests\Badges;
 
-use Syehan\Gamify\BadgeType;
-use Syehan\Gamify\Tests\Models\User;
+use Voilaah\Gamify\BadgeType;
+use Voilaah\Gamify\Tests\Models\User;
 
 class FirstContribution extends BadgeType
 {

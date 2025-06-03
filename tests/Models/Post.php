@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Tests\Models;
+namespace Voilaah\Gamify\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +28,6 @@ class Post extends Model
 
     public function reputations()
     {
-        return $this->morphMany('Syehan\Gamify\Reputation', 'subject');
+        return $this->morphMany('Voilaah\Gamify\Reputation', 'subject');
     }
 }

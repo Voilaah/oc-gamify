@@ -1,4 +1,5 @@
-<?php namespace Syehan\Gamify\Controllers;
+<?php
+namespace Voilaah\Gamify\Controllers;
 
 use BackendMenu;
 use Backend\Classes\Controller;
@@ -28,7 +29,7 @@ class Badges extends Controller
     /**
      * @var array required permissions
      */
-    public $requiredPermissions = ['syehan.gamify.badges'];
+    public $requiredPermissions = ['voilaah.gamify.badges'];
 
     /**
      * __construct the controller
@@ -37,6 +38,6 @@ class Badges extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('Syehan.Gamify', 'gamify', 'badges');
+        BackendMenu::setContext('Voilaah.Gamify', 'gamify', 'badges');
     }
 }

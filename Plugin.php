@@ -1,15 +1,16 @@
 <?php
 
-namespace Syehan\Gamify;
+namespace Voilaah\Gamify;
 
 use Backend, Event;
 use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
-use Syehan\Gamify\Console\MakeBadgeCommand;
-use Syehan\Gamify\Console\MakePointCommand;
-use Syehan\Gamify\Events\ReputationChanged;
-use Syehan\Gamify\Listeners\SyncBadges;
 use Illuminate\Support\Collection;
+use Voilaah\Gamify\Listeners\SyncBadges;
+use Voilaah\Gamify\Console\MakeBadgeCommand;
+use Voilaah\Gamify\Console\MakePointCommand;
+use Voilaah\Gamify\Events\ReputationChanged;
+use Voilaah\Gamify\Components\UserActivityTracker;
 
 /**
  * Plugin Information File
@@ -19,30 +20,17 @@ class Plugin extends PluginBase
     public $require = ['RainLab.User'];
 
     /**
-     * Returns information about this plugin.
-     *
-     * @return array
-     */
-    public function pluginDetails()
-    {
-        return [
-            'name' => 'Gamify',
-            'description' => 'Add gamification in OctoberCMS with reputation point and badges support',
-            'author' => 'Mohd Saqueib Ansari, Syehan',
-            'icon' => 'icon-puzzle-piece'
-        ];
-    }
-
-    /**
      * Register method, called when the plugin is first registered.
      *
      * @return void
      */
     public function register()
     {
-        $this->registerConsoleCommand('syehan.gamify_point', MakePointCommand::class);
-        $this->registerConsoleCommand('syehan.gamify_badge', MakeBadgeCommand::class);
+        $this->registerConsoleCommand('voilaah.gamify_point', MakePointCommand::class);
+        $this->registerConsoleCommand('voilaah.gamify_badge', MakeBadgeCommand::class);
+        // $this->registerConsoleCommand('voilaah.gamify_mission', MakeBadgeCommand::class);
 
+        // `php artisan cache:forget gamify.badges.all`
         $this->app->singleton('badges', function () {
             return cache()->rememberForever('gamify.badges.all', function () {
                 return $this->getBadges()->map(function ($badge) {
@@ -74,35 +62,10 @@ class Plugin extends PluginBase
         $this->bindBehaviorsBackendUser();
     }
 
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
+    public function registerComponents()
     {
         return [
-            'gamify' => [
-                'label' => 'Gamify',
-                'url' => Backend::url('syehan/gamify/reputations'),
-                'icon' => 'icon-star',
-                'permissions' => ['syehan.gamify.*'],
-                'order' => 500,
-                'sideMenu' => [
-                    'reputations' => [
-                        'label' => 'Reputation',
-                        'icon' => 'icon-star',
-                        'url' => Backend::url('syehan/gamify/reputations'),
-                        'permissions' => ['syehan.gamify.access_reputations']
-                    ],
-                    'badges' => [
-                        'label' => 'Badge',
-                        'icon' => 'icon-asterisk',
-                        'url' => Backend::url('syehan/gamify/badges'),
-                        'permissions' => ['syehan.gamify.access_badges']
-                    ],
-                ]
-            ],
+            UserActivityTracker::class => 'userActivityTracker',
         ];
     }
 
@@ -124,7 +87,7 @@ class Plugin extends PluginBase
 
         $badges = [];
 
-        // foreach (glob(plugins_path('/syehan/gamify/badges/') . '*.php') as $file) {
+        // foreach (glob(plugins_path('/voilaah/gamify/badges/') . '*.php') as $file) {
         foreach (glob(plugins_path($path) . '*.php') as $file) {
             if (is_file($file)) {
                 $badges[] = app($badgeRootNamespace . '\\' . pathinfo($file, PATHINFO_FILENAME));
@@ -139,7 +102,7 @@ class Plugin extends PluginBase
     {
         if (class_exists(\RainLab\User\Models\User::class)) {
             \RainLab\User\Models\User::extend(function ($model) {
-                $model->implement[] = 'Syehan.Gamify.Behaviors.UserGamifyBehavior';
+                $model->implement[] = 'voilaah.Gamify.Behaviors.UserGamifyBehavior';
             });
         }
     }
@@ -148,7 +111,7 @@ class Plugin extends PluginBase
     {
         if (class_exists(\Backend\Models\User::class)) {
             \Backend\Models\User::extend(function ($model) {
-                $model->implement[] = 'Syehan.Gamify.Behaviors.UserGamifyBehavior';
+                $model->implement[] = 'voilaah.Gamify.Behaviors.UserGamifyBehavior';
             });
         }
     }

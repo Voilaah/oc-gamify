@@ -1,4 +1,5 @@
-<?php namespace Syehan\Gamify\Updates;
+<?php
+namespace Voilaah\Gamify\Updates;
 
 use Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,7 +15,7 @@ class AddReputationFieldOnUserTable extends Migration
     public function up()
     {
         Schema::table('users', function ($table) {
-            $table->unsignedInteger('syehan_gamify_reputation')->default(0)->after('password');
+            $table->unsignedInteger('voilaah_gamify_reputation')->default(0)->after('password');
         });
     }
 
@@ -26,7 +27,7 @@ class AddReputationFieldOnUserTable extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-            $table->dropColumn('syehan_gamify_reputation');
+            $table->dropColumn('voilaah_gamify_reputation');
         });
     }
 }

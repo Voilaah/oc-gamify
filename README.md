@@ -1,20 +1,20 @@
 ## OctoberCMS Gamify 🕹 🏆
 
-This is a fork with fixes of the [gamify plugin](https://github.com/syehan/gamify-plugin).
+This is a fork with fixes of the [gamify plugin](https://github.com/voilaah/gamify-plugin).
 
 ### Fixes:
 
 - use `RainLab.User` v3
 - fix the `config/gamify.php` php code reading the `.env` variables `GAMIFY_BADGE_LEVELS`
 
-Use `syehan/gamify-plugin` to add reputation point &amp; badges in your OctoberCMS.
+Use `voilaah/gamify-plugin` to add reputation point &amp; badges in your OctoberCMS.
 
 ### Installation
 
 **1** - You can install the package via composer:
 
 ```bash
-$ composer require syehan/gamify-plugin
+$ composer require voilaah/gamify-plugin
 ```
 
 **2** - Now publish the migration for gamify tables:
@@ -23,7 +23,7 @@ $ composer require syehan/gamify-plugin
 php artisan october:migrate
 ```
 
-_Note:_ It will generate migration for `syehan_gamify_reputations`, `syehan_gamify_badges` and `syehan_gamify_user_badges` tables along with add reputation field migration for `users` table to store the points, you will need to run `composer require doctrine/dbal` in order to support dropping and adding columns.
+_Note:_ It will generate migration for `voilaah_gamify_reputations`, `voilaah_gamify_badges` and `voilaah_gamify_user_badges` tables along with add reputation field migration for `users` table to store the points, you will need to run `composer require doctrine/dbal` in order to support dropping and adding columns.
 
 If your payee (model who will be getting the points) model is `RainLab\User\Models\User` then you don't have to change anything in `config/gamify.php`.
 
@@ -40,7 +40,7 @@ return [
     'payee_model' => '\RainLab\User\Models\User',
 
     // Reputation model
-    'reputation_model' => '\Syehan\Gamify\Models\Reputation',
+    'reputation_model' => '\Voilaah\Gamify\Models\Reputation',
 
     // Allow duplicate reputation points
     'allow_reputation_duplicate' => true,
@@ -52,7 +52,7 @@ return [
     'channel_name' => 'user.reputation.',
 
     // Badge model
-    'badge_model' => '\Syehan\Gamify\Models\Badge',
+    'badge_model' => '\Voilaah\Gamify\Models\Badge',
 
     // Where all badges icon stored
     'badge_icon_folder' => 'images/badges/',
@@ -84,7 +84,7 @@ here's the example :
         "System\\Console\\": "modules/system/console"
     },
     "files": [
-        "plugins/syehan/gamify/helpers.php"
+        "plugins/voilaah/gamify/helpers.php"
     ]
 }
 ```
@@ -100,7 +100,7 @@ $ composer dumpautoload
 **1.** After package installation now add the **Gamify** trait on `RainLab\User\Models\User` model or any model who acts as **user** in your app.
 
 ```php
-use Syehan\Gamify\Traits\Gamify;
+use Voilaah\Gamify\Traits\Gamify;
 use Illuminate\Notifications\Notifiable;
 use Model;
 
@@ -114,7 +114,7 @@ class YourUserModel extends Model
 **2.** Next step is to create a point.
 
 ```bash
-php artisan syehan:gamify-point PostCreated
+php artisan voilaah:gamify-point PostCreated
 ```
 
 It will create a PointType class named `PostCreated` under `app/Gamify/Points/` folder.
@@ -124,7 +124,7 @@ It will create a PointType class named `PostCreated` under `app/Gamify/Points/` 
 
 namespace App\Gamify\Points;
 
-use Syehan\Gamify\Classes\PointType;
+use Voilaah\Gamify\Classes\PointType;
 
 class PostCreated extends PointType
 {
@@ -230,7 +230,7 @@ If you want to get all the points given on a `subject` model. You should define 
      */
     public function reputations()
     {
-        return $this->morphMany('Syehan\Gamify\Reputation', 'subject');
+        return $this->morphMany('Voilaah\Gamify\Reputation', 'subject');
     }
 ```
 
@@ -294,7 +294,7 @@ class PostCreated extends PointType
 
 #### Event on reputation changed
 
-Whenever user point changes it fires `\Syehan\Gamify\Events\ReputationChanged` event which has the following payload:
+Whenever user point changes it fires `\Voilaah\Gamify\Events\ReputationChanged` event which has the following payload:
 
 ```php
 class ReputationChanged implements ShouldBroadcast {
@@ -334,7 +334,7 @@ Badge levels are stored as `tinyint` so keep the value as an integer value. It w
 To generate a badge you can run following provided command:
 
 ```bash
-php artisan syehan:gamify-badge FirstContribution
+php artisan voilaah:gamify-badge FirstContribution
 ```
 
 It will create a BadgeType class named `FirstContribution` under `app/Gamify/Badges/` folder.
@@ -344,7 +344,7 @@ It will create a BadgeType class named `FirstContribution` under `app/Gamify/Bad
 
 namespace App\Gamify\Badges;
 
-use Syehan\Gamify\BadgeType;
+use Voilaah\Gamify\BadgeType;
 
 class FirstContribution extends BadgeType
 {
@@ -428,7 +428,7 @@ If you discover any security related issues, please email sehanlim@outlook.com i
 ### Credits
 
 - [Mohd Saqueib Ansari](https://github.com/saqueib) (Author)
-- [Syehan](https://github.com/syehan) (Author)
+- [voilaah](https://github.com/voilaah) (Author)
 
 ### License
 

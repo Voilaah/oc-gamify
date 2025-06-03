@@ -1,0 +1,58 @@
+plugin:
+    name: Gamify
+    description: Add gamification in OctoberCMS with reputation point, badges and missions support
+    author: Voilaah
+    icon: icon-puzzle-piece
+    homepage: ""
+permissions:
+    voilaah.gamify.access_reputations:
+        tab: Gamify
+        label: Access Reputation Points
+    voilaah.gamify.access_badges:
+        tab: Gamify
+        label: Access Badges
+    voilaah.gamify.access_missions:
+        tab: Gamify
+        label: Access Missions
+    voilaah.gamify.voilaah.gamify.access_userloginstreaks:
+        tab: Gamify
+        label: Access User Login Streaks
+navigation:
+    gamify:
+        label: Gamify
+        url: voilaah/gamify/reputations
+        icon: icon-star
+        order: 280
+        permissions:
+            - voilaah.gamify.*
+        sideMenu:
+            _section_gamify:
+                label: Gamification
+                itemType: section
+            reputations:
+                label: Reputation
+                icon: icon-star
+                url: voilaah/gamify/reputations
+                permissions:
+                    - voilaah.gamify.access_reputations
+            badges:
+                label: Badge
+                icon: icon-asterisk
+                url: voilaah/gamify/badges
+                permissions:
+                    - voilaah.gamify.access_badges
+            missions:
+                label: Mission
+                icon: icon-asterisk
+                url: voilaah/gamify/missions
+                permissions:
+                    - voilaah.gamify.access_missions
+            _section_activity:
+                label: Activity
+                itemType: section
+            userloginstreaks:
+                label: User Login Streaks
+                icon: icon-list
+                url: voilaah/gamify/userloginstreaks
+                permissions:
+                    - voilaah.gamify.access_userloginstreaks

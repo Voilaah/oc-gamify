@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Behaviors\Traits;
+namespace Voilaah\Gamify\Behaviors\Traits;
 
 trait Gamify
 {

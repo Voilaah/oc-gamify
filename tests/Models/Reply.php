@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Tests\Models;
+namespace Voilaah\Gamify\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

@@ -5,10 +5,10 @@ if (!function_exists('givePoint')) {
     /**
      * Give point to user
      *
-     * @param \Syehan\Gamify\Classes\PointType $pointType
+     * @param \Voilaah\Gamify\Classes\PointType $pointType
      * @param null $payee
      */
-    function givePoint(\Syehan\Gamify\Classes\PointType $pointType, $payee = null)
+    function givePoint(\Voilaah\Gamify\Classes\PointType $pointType, $payee = null)
     {
         $payee = $payee ?? config('gamify.auth_base')::user();
 
@@ -25,10 +25,10 @@ if (!function_exists('undoPoint')) {
     /**
      * Undo a given point
      *
-     * @param \Syehan\Gamify\Classes\PointType $pointType
+     * @param \Voilaah\Gamify\Classes\PointType $pointType
      * @param null $payee
      */
-    function undoPoint(\Syehan\Gamify\Classes\PointType $pointType, $payee = null)
+    function undoPoint(\Voilaah\Gamify\Classes\PointType $pointType, $payee = null)
     {
         $payee = $payee ?? config('gamify.auth_base')::user();
 

@@ -1,17 +1,17 @@
 <?php
 
-namespace Syehan\Gamify\Console;
+namespace Voilaah\Gamify\Console;
 
 use October\Rain\Scaffold\GeneratorCommandBase;
 
-class MakePointCommand extends GeneratorCommandBase 
+class MakePointCommand extends GeneratorCommandBase
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'syehan:gamify-point {namespace : App or Plugin Namespace (eg: Acme.Blog)} 
+    protected $signature = 'voilaah:gamify-point {namespace : App or Plugin Namespace (eg: Acme.Blog)}
     {name : The name of the Point. Eg: PointLoggedIn}
     {--o|overwrite : Overwrite existing files with generated ones}';
 

@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/syehan/gamify/models/reputation/columns.yaml
+list: $/voilaah/gamify/models/reputation/columns.yaml
 
 # Model Class name
-modelClass: Syehan\Gamify\Models\Reputation
+modelClass: Voilaah\Gamify\Models\Reputation
 
 # List Title
 title: Manage Reputations
 
 # Link URL for each record
-recordUrl: syehan/gamify/reputations/update/:id
+recordUrl: voilaah/gamify/reputations/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records

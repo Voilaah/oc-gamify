@@ -6,25 +6,25 @@
 name: Reputation
 
 # Model Form Field configuration
-form: $/syehan/gamify/models/reputation/fields.yaml
+form: $/voilaah/gamify/models/reputation/fields.yaml
 
 # Model Class name
-modelClass: Syehan\Gamify\Models\Reputation
+modelClass: Voilaah\Gamify\Models\Reputation
 
 # Default redirect location
-defaultRedirect: syehan/gamify/reputations
+defaultRedirect: voilaah/gamify/reputations
 
 # Create page
 create:
     title: backend::lang.form.create_title
-    redirect: syehan/gamify/reputations/update/:id
-    redirectClose: syehan/gamify/reputations
+    redirect: voilaah/gamify/reputations/update/:id
+    redirectClose: voilaah/gamify/reputations
 
 # Update page
 update:
     title: backend::lang.form.update_title
-    redirect: syehan/gamify/reputations
-    redirectClose: syehan/gamify/reputations
+    redirect: voilaah/gamify/reputations
+    redirectClose: voilaah/gamify/reputations
 
 # Preview page
 preview:

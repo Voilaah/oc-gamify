@@ -1,12 +1,12 @@
 <?php
 
-namespace Syehan\Gamify\Tests;
+namespace Voilaah\Gamify\Tests;
 
-use Syehan\Gamify\PointType;
-use Syehan\Gamify\Tests\Models\User;
-use Syehan\Gamify\Exceptions\InvalidPayeeModel;
-use Syehan\Gamify\Exceptions\PointsNotDefined;
-use Syehan\Gamify\Exceptions\PointSubjectNotSet;
+use Voilaah\Gamify\PointType;
+use Voilaah\Gamify\Tests\Models\User;
+use Voilaah\Gamify\Exceptions\InvalidPayeeModel;
+use Voilaah\Gamify\Exceptions\PointsNotDefined;
+use Voilaah\Gamify\Exceptions\PointSubjectNotSet;
 
 class PointTest extends TestCase
 {

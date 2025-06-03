@@ -1,6 +1,6 @@
 <?php
 
-namespace Syehan\Gamify\Exceptions;
+namespace Voilaah\Gamify\Exceptions;
 
 use Exception;
 

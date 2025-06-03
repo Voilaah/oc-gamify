@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/syehan/gamify/models/badge/columns.yaml
+list: $/voilaah/gamify/models/badge/columns.yaml
 
 # Model Class name
-modelClass: Syehan\Gamify\Models\Badge
+modelClass: Voilaah\Gamify\Models\Badge
 
 # List Title
 title: Manage Badges
 
 # Link URL for each record
-recordUrl: syehan/gamify/badges/update/:id
+recordUrl: voilaah/gamify/badges/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records

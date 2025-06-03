@@ -1,12 +1,12 @@
 <?php
 
-namespace Syehan\Gamify\Classes;
+namespace Voilaah\Gamify\Classes;
 
 use Illuminate\Database\Query\Builder;
 use Model;
-use Syehan\Gamify\Exceptions\PointsNotDefined;
-use Syehan\Gamify\Exceptions\InvalidPayeeModel;
-use Syehan\Gamify\Exceptions\PointSubjectNotSet;
+use Voilaah\Gamify\Exceptions\PointsNotDefined;
+use Voilaah\Gamify\Exceptions\InvalidPayeeModel;
+use Voilaah\Gamify\Exceptions\PointSubjectNotSet;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 abstract class PointType

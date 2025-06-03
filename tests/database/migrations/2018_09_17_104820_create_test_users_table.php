@@ -20,7 +20,7 @@ class CreateTestUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->unsignedInteger('syehan_gamify_reputation')->default(0);
+            $table->unsignedInteger('voilaah_gamify_reputation')->default(0);
             $table->timestamps();
         });
     }
