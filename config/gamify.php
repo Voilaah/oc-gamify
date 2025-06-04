@@ -22,6 +22,7 @@ return [
     // Badge model
     'badge_model' => env('GAMIFY_BADGE_MODEL', \Voilaah\Gamify\Models\Badge::class),
     'mission_model' => env('GAMIFY_MISSION_MODEL', \Voilaah\Gamify\Models\Mission::class),
+    'streak_model' => env('GAMIFY_STREAK_MODEL', \Voilaah\Gamify\Models\UserStreak::class),
 
     // Where all icon stored
     'badge_icon_folder' => env('GAMIFY_BADGE_ICON_FOLDER', 'images/badges/'),
