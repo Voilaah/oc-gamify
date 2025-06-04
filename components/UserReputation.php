@@ -6,14 +6,13 @@ use Cms\Classes\ComponentBase;
 use Voilaah\Gamify\Models\Reputation;
 
 /**
- * Points Component
+ * UserReputation Component
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class Points extends ComponentBase
+class UserReputation extends ComponentBase
 {
     public $items;
-
     public $perPage;
     public $page;
 
@@ -64,20 +63,10 @@ class Points extends ComponentBase
 
     public function loadUserReputation($user)
     {
-
-        /* $user->load(['reputations', 'reputations.subject']);
-        $this->items = $this->page['items'] = $user->reputations->paginate(1, 1); */
-
         $query = Reputation::query()
             ->payeeId($user->id)
             ->with(['payee', 'subject'])
             ->orderBy('updated_at', 'desc');
         return $query->paginate($this->perPage, $this->page);
-
-        /* if ($paginate) {
-            return $query->paginate($perPage, $page);
-        } else {
-            return $query;
-        } */
     }
 }

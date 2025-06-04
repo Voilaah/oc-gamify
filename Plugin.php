@@ -6,11 +6,11 @@ use Backend, Event;
 use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
-use Voilaah\Gamify\Components\Points;
 use Voilaah\Gamify\Listeners\SyncBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
 use Voilaah\Gamify\Events\ReputationChanged;
+use Voilaah\Gamify\Components\UserReputation;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
 
@@ -63,7 +63,7 @@ class Plugin extends PluginBase
         $this->bindBehaviorsRainLabUser();
         $this->bindBehaviorsBackendUser();
 
-        // register a streak type for example purpose
+        // Example: register a streak type for example purpose
         // \Voilaah\Gamify\Classes\Streak\StreakManager::register('user_login', trans('User Login'), \Voilaah\Gamify\Classes\Streak\StreakTypes\UserLoginStreak::class);
     }
 
@@ -71,7 +71,7 @@ class Plugin extends PluginBase
     {
         return [
             UserActivityTracker::class => 'userActivityTracker',
-            Points::class => 'points',
+            UserReputation::class => 'userReputation',
         ];
     }
 
