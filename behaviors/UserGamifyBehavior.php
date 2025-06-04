@@ -18,9 +18,10 @@ class UserGamifyBehavior extends ExtensionBase
 
     protected function relationship($model)
     {
-        $model->belongsToMany['streaks'] = [
+        $model->hasMany['streaks'] = [
             config('gamify.streak_model'),
-            'table' => 'voilaah_gamify_user_streaks'
+            'table' => 'voilaah_gamify_user_streaks',
+            'key' => 'user_id'
         ];
 
         $model->belongsToMany['missions'] = [
