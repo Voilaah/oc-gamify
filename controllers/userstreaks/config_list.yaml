@@ -1,0 +1,12 @@
+list: $/voilaah/gamify/models/userstreak/columns.yaml
+modelClass: Voilaah\Gamify\Models\UserStreak
+title: User Streaks
+noRecordsMessage: "backend::lang.list.no_records"
+showSetup: true
+showCheckboxes: true
+recordsPerPage: 20
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: "backend::lang.list.search_prompt"
+filter: config_filter.yaml

@@ -11,6 +11,7 @@ use Voilaah\Gamify\Listeners\SyncBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
 use Voilaah\Gamify\Events\ReputationChanged;
+use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
 
 /**
@@ -61,6 +62,9 @@ class Plugin extends PluginBase
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();
         $this->bindBehaviorsBackendUser();
+
+        // register a streak type for example purpose
+        // \Voilaah\Gamify\Classes\Streak\StreakManager::register('user_login', trans('User Login'), \Voilaah\Gamify\Classes\Streak\StreakTypes\UserLoginStreak::class);
     }
 
     public function registerComponents()
@@ -69,6 +73,44 @@ class Plugin extends PluginBase
             UserActivityTracker::class => 'userActivityTracker',
             Points::class => 'points',
         ];
+    }
+
+    /**
+     * registerSchedule
+     */
+    public function registerSchedule($schedule)
+    {
+        $schedule->call(function () {
+            \Log::info('[Gamify] Scheduled streak task triggered at ' . now());
+
+            foreach (StreakManager::all() as $code => $config) {
+                $class = $config['class'] ?? null;
+
+                if (!is_string($class) || !class_exists($class)) {
+                    \Log::warning("[Gamify] Invalid streak class for code: $code", ['class' => $class]);
+                    continue;
+                }
+
+                try {
+                    $instance = new $class;
+
+                    if (method_exists($instance, 'isScheduled') && $instance->isScheduled()) {
+                        \Log::info("[Gamify] Running scheduled streak: $code");
+                        $instance->updateForToday();
+                    } else {
+                        \Log::debug("[Gamify] Streak '$code' is not scheduled to run.");
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error("[Gamify] Error running scheduled streak: $code", [
+                        'class' => $class,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        })
+            ->dailyAt('23:59');
+        //->everyMinute();
+        // ->everyFiveMinutes();
     }
 
     /**

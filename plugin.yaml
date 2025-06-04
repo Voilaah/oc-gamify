@@ -14,7 +14,7 @@ permissions:
     voilaah.gamify.access_missions:
         tab: Gamify
         label: Access Missions
-    voilaah.gamify.voilaah.gamify.access_userloginstreaks:
+    voilaah.gamify.voilaah.gamify.access_userstreaks:
         tab: Gamify
         label: Access User Login Streaks
 navigation:
@@ -51,8 +51,8 @@ navigation:
                 label: Activity
                 itemType: section
             userloginstreaks:
-                label: User Login Streaks
+                label: User Streaks
                 icon: icon-list
-                url: voilaah/gamify/userloginstreaks
+                url: voilaah/gamify/userstreaks
                 permissions:
-                    - voilaah.gamify.access_userloginstreaks
+                    - voilaah.gamify.access_userstreaks

@@ -1,0 +1,10 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+    courses:
+        label: Streak Type
+        scope: applyStreakType
+        modelClass: Voilaah\Gamify\Models\UserStreak
+        options: getStreakTypesOptions

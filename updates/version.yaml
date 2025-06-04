@@ -1,15 +1,13 @@
 v1.0.1:
-    - 'First version of Gamify'
-    - create_gamify_table.php
+    - "First version of Gamify"
+    - create_gamify_tables.php
     - add_reputation_field_on_user_table.php
-v1.0.2: 'Minor fix Point and Badge Command.'
-v1.0.3: 'Minor fix ReputationChanged channeling broadcast able to disabled.'
-v1.0.4: 'Adds binding behaviors to model RainLab.User and Backend.User.'
-v1.0.5: 'Minor fix helpers.php.'
-v1.0.6: 'Minor fix typo namespace on GamifyUserBehavior.php.'
-v1.0.7: 'Minor fix fetching getBadges() storing to Database.'
+v1.0.2: "Minor fix Point and Badge Command."
+v1.0.3: "Minor fix ReputationChanged channeling broadcast able to disabled."
+v1.0.4: "Adds binding behaviors to model RainLab.User and Backend.User."
+v1.0.5: "Minor fix helpers.php."
+v1.0.6: "Minor fix typo namespace on GamifyUserBehavior.php."
+v1.0.7: "Minor fix fetching getBadges() storing to Database."
 v1.0.8: 'Adds Auth Base to able switch User authentication in config/gamify.php, can switch to \Auth::class or \BackendAuth::class.'
-v1.1.0: 'Create Backend Navigation Menus for gamify, showing Badges and Reputation.'
-v1.1.1:
-    - 'Created table voilaah_gamify_userlogin_streak'
-    - builder_table_create_voilaah_gamify_userlogin_streak.php
+v1.1.0: "Create Backend Navigation Menus for gamify, showing Badges and Reputation."
+v1.1.1: "Create Backend Navigation Menus for gamify, showing Missions and Streaks."

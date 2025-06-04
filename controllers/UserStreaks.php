@@ -1,10 +1,11 @@
-<?php namespace Voilaah\Gamify\Controllers;
+<?php
+namespace Voilaah\Gamify\Controllers;
 
 use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class UserLoginStreaks extends Controller
+class UserStreaks extends Controller
 {
     public $implement = [
         \Backend\Behaviors\ListController::class
@@ -13,13 +14,13 @@ class UserLoginStreaks extends Controller
     public $listConfig = 'config_list.yaml';
 
     public $requiredPermissions = [
-        'voilaah.gamify.voilaah.gamify.access_userloginstreaks' 
+        'voilaah.gamify.voilaah.gamify.access_userloginstreaks'
     ];
 
     public function __construct()
     {
         parent::__construct();
-        BackendMenu::setContext('Voilaah.Gamify', 'gamify', 'userloginstreaks');
+        BackendMenu::setContext('Voilaah.Gamify', 'gamify', 'userstreaks');
     }
 
 }

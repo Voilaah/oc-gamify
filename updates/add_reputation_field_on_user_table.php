@@ -15,7 +15,9 @@ class AddReputationFieldOnUserTable extends Migration
     public function up()
     {
         Schema::table('users', function ($table) {
-            $table->unsignedInteger('voilaah_gamify_reputation')->default(0)->after('password');
+            if (!Schema::hasColumn('users', 'voilaah_gamify_reputation')) {
+                $table->unsignedInteger('voilaah_gamify_reputation')->default(0)->after('password');
+            }
         });
     }
 
@@ -27,7 +29,9 @@ class AddReputationFieldOnUserTable extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-            $table->dropColumn('voilaah_gamify_reputation');
+            if (Schema::hasColumn('users', 'voilaah_gamify_reputation')) {
+                $table->dropColumn('voilaah_gamify_reputation');
+            }
         });
     }
 }

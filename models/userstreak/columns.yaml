@@ -9,22 +9,31 @@ columns:
         type: text
         searchable: true
         sortable: true
-    user[email]:
+    user_email:
         label: Email
         type: text
+        relation: user
+        select: email
         searchable: true
         sortable: true
-    last_activity_date:
-        label: Last activity date
-        type: datetime
-        sortable: true
+    streak_type_label:
+        label: Streak Type
+        sortable: false
+        type: partial
+        path: ~/plugins/voilaah/gamify/models/userstreak/_streak_type_label.htm
     current_streak:
         label: Current streak
         type: number
         sortable: true
+        width: 100px
     longest_streak:
         label: Longest streak
         type: number
+        sortable: true
+        width: 100px
+    last_activity_date:
+        label: Last activity date
+        type: datetime
         sortable: true
     created_at:
         label: created_at

@@ -21,12 +21,15 @@ return [
 
     // Badge model
     'badge_model' => env('GAMIFY_BADGE_MODEL', \Voilaah\Gamify\Models\Badge::class),
+    'mission_model' => env('GAMIFY_MISSION_MODEL', \Voilaah\Gamify\Models\Mission::class),
 
-    // Where all badges icon stored
+    // Where all icon stored
     'badge_icon_folder' => env('GAMIFY_BADGE_ICON_FOLDER', 'images/badges/'),
+    'mission_icon_folder' => env('GAMIFY_MISSION_ICON_FOLDER', 'images/missions/'),
 
-    // Extention of badge icons
+    // Extention of icons
     'badge_icon_extension' => env('GAMIFY_BADGE_ICON_EXTENSION', '.svg'),
+    'mission_icon_extension' => env('GAMIFY_MISSION_ICON_EXTENSION', '.svg'),
 
     // All the levels for badge (example value on .env 'beginner|1,intermediate|2')
     'badge_levels' => env('GAMIFY_BADGE_LEVELS')
@@ -42,6 +45,9 @@ return [
 
     // Default level
     'badge_default_level' => env('GAMIFY_BADGE_DEFAULT_LEVEL', 1),
+    'mission_default_level' => env('GAMIFY_MISSION_DEFAULT_LEVEL', 1),
 
+    // Namespaces
     'badge_namespace' => env('GAMIFY_BADGE_NAMESPACE', 'App\Badges'),
+    'mission_namespace' => env('GAMIFY_MISSION_NAMESPACE', 'App\Missions'),
 ];
