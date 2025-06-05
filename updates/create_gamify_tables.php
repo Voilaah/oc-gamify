@@ -13,6 +13,7 @@ class CreateGamifyTables extends Migration
      */
     public function up()
     {
+        Schema::disableForeignKeyConstraints();
 
         Schema::dropIfExists('voilaah_gamify_reputations');
         Schema::dropIfExists('voilaah_gamify_badges');
@@ -20,6 +21,8 @@ class CreateGamifyTables extends Migration
         Schema::dropIfExists('voilaah_gamify_missions');
         Schema::dropIfExists('voilaah_gamify_user_missions');
         Schema::dropIfExists('voilaah_gamify_user_streaks');
+
+        Schema::enableForeignKeyConstraints();
 
         // reputations table
         Schema::create('voilaah_gamify_reputations', function ($table) {
@@ -110,11 +113,16 @@ class CreateGamifyTables extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
+
         Schema::dropIfExists('voilaah_gamify_reputations');
         Schema::dropIfExists('voilaah_gamify_badges');
         Schema::dropIfExists('voilaah_gamify_user_badges');
         Schema::dropIfExists('voilaah_gamify_missions');
         Schema::dropIfExists('voilaah_gamify_user_missions');
         Schema::dropIfExists('voilaah_gamify_user_streaks');
+
+        Schema::enableForeignKeyConstraints();
+
     }
 }
