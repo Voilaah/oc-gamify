@@ -34,6 +34,12 @@ class UserGamifyBehavior extends ExtensionBase
             'table' => 'voilaah_gamify_user_badges'
         ];
 
+        $model->belongsToMany['badges_count'] = [
+            config('gamify.badge_model'),
+            'table' => 'voilaah_gamify_user_badges',
+            'count' => true
+        ];
+
         $model->hasMany['reputations'] = [
             config('gamify.reputation_model'),
             'key' => 'payee_id',
