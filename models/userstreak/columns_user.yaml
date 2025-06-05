@@ -4,20 +4,6 @@ columns:
         type: number
         invisible: true
         sortable: true
-    user_name:
-        label: User name
-        type: text
-        relation: user
-        select: concat(first_name, ' ', last_name)
-        searchable: true
-        sortable: true
-    user_email:
-        label: Email
-        type: text
-        relation: user
-        select: email
-        searchable: true
-        sortable: true
     streak_type_label:
         label: Streak Type
         sortable: false
