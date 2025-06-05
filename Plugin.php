@@ -109,7 +109,7 @@ class Plugin extends PluginBase
             }
         })
             ->dailyAt('23:15');
-        //->everyMinute();
+        // ->everyMinute();
         // ->everyFiveMinutes();
     }
 
