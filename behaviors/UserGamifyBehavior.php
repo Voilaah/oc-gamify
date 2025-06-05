@@ -24,6 +24,13 @@ class UserGamifyBehavior extends ExtensionBase
             'key' => 'user_id'
         ];
 
+        $model->hasMany['streaks_count'] = [
+            config('gamify.streak_model'),
+            'table' => 'voilaah_gamify_user_streaks',
+            'key' => 'user_id',
+            'count' => true
+        ];
+
         $model->belongsToMany['missions'] = [
             config('gamify.mission_model'),
             'table' => 'voilaah_gamify_user_missions'
