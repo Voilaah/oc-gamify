@@ -12,6 +12,8 @@ abstract class BadgeType
      */
     protected $model;
 
+    public $allowDuplicates = true;
+
     /**
      * BadgeType constructor.
      */
@@ -28,6 +30,52 @@ abstract class BadgeType
      */
     abstract public function qualifier($user);
 
+    /**
+     * Check for badge point allowed
+     *
+     * @param PointType $pointType
+     * @return bool
+     */
+    protected function isDuplicateBadgeAllowed()
+    {
+        return property_exists($this, 'allowDuplicates')
+            ? $this->allowDuplicates
+            : false;
+    }
+
+    /**
+     * Check if badge already exists for a user
+     *
+     * @return bool
+     * @throws InvalidPayeeModel
+     */
+    public function badgeExists($user)
+    {
+        return $this->badgeQuery($user)->exists();
+    }
+
+    /**
+     * Get badge query for this badge
+     *
+     * @return Builder     *
+     */
+    public function badgeQuery($user)
+    {
+        return $user->badges()->where([
+            ['user_id', $user->id],
+            ['badge_id', $this->getBadgeId()],
+        ]);
+    }
+
+    /**
+     * Get model instance of the badge
+     *
+     * @return string
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
     /**
      * Get name of badge
      *
@@ -62,6 +110,16 @@ abstract class BadgeType
         return property_exists($this, 'icon')
             ? $this->icon
             : $this->getDefaultIcon();
+    }
+
+    /**
+     * Get the level for badge
+     *
+     * @return int
+     */
+    public function getSortOrder()
+    {
+        return $this->sort_order ?? 1;
     }
 
     /**
@@ -132,6 +190,7 @@ abstract class BadgeType
             ->firstOrNew(['name' => $this->getName()])
             ->forceFill([
                 'level' => $this->getLevel(),
+                'sort_order' => $this->getSortOrder(),
                 'description' => $this->getDescription(),
                 'icon' => $this->getIcon()
             ]);

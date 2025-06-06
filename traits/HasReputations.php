@@ -103,9 +103,13 @@ trait HasReputations
      */
     public function reducePoint($point = 1)
     {
-        $this->decrement($this->getReputationField(), $point);
+        if ($this->model->{$this->getReputationField()} > $point) {
 
-        ReputationChanged::dispatch($this, $point, false);
+            $this->decrement($this->getReputationField(), $point);
+
+            ReputationChanged::dispatch($this, $point, false);
+
+        }
 
         return $this;
     }

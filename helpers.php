@@ -1,5 +1,26 @@
 <?php
 
+use RainLab\User\Models\User;
+
+if (!function_exists('getUserRank')) {
+
+    /**
+     * Get the user rank based on his point and the rest of the user
+     *
+     * @param null $user
+     */
+    function getUserRank($user)
+    {
+        $selectUserRank = DB::raw("COUNT(1) as ranking");
+        $userRank = User::select($selectUserRank)
+            ->orderByDesc($user->getReputationField())
+            ->orderBy('last_name', 'ASC')
+            ->where($user->getReputationField(), '>=', $user->getPoints())
+            ->first();
+        return $userRank['ranking'];
+    }
+}
+
 if (!function_exists('givePoint')) {
 
     /**

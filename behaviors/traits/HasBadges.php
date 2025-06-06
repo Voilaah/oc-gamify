@@ -20,15 +20,14 @@ trait HasBadges
             ->qualifier($user)
             ->map->getBadgeId();
 
-        $ids = $user->badges()->syncWithPivotValues(
+        $ids = $user->badges()->sync($badgeIds);
+        /* $ids = $user->badges()->syncWithPivotValues(
             $badgeIds,
             [
                 'created_at' => \Carbon\Carbon::now(),
                 // 'updated_at' => \Carbon\Carbon::now(),
             ]
-        );
-
-        // trace_log($ids);
+        ); */
 
         /**
          * array $ids = [

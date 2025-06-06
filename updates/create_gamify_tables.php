@@ -43,6 +43,8 @@ class CreateGamifyTables extends Migration
         Schema::create('voilaah_gamify_badges', function ($table) {
             $table->increments('id');
             $table->string('name')->index();
+            $table->string('slug')->index();
+            $table->smallInteger('sort_order')->default(1)->index();
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
             $table->tinyInteger('level')->default(config('gamify.badge_default_level', 1))->index();

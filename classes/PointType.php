@@ -94,7 +94,7 @@ abstract class PointType
     }
 
     /**
-     * Check if reputation alredy exists for a point
+     * Check if reputation already exists for a point
      *
      * @return bool
      * @throws InvalidPayeeModel

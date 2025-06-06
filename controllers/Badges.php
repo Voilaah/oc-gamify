@@ -40,4 +40,10 @@ class Badges extends Controller
 
         BackendMenu::setContext('Voilaah.Gamify', 'gamify', 'badges');
     }
+
+    public function listExtendQuery($query)
+    {
+        $query->orderBy('level')->orderBy('sort_order');
+    }
+
 }

@@ -13,6 +13,7 @@ use Voilaah\Gamify\Events\ReputationChanged;
 use Voilaah\Gamify\Components\UserReputation;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
+use Voilaah\Gamify\Events\BadgeAwarded;
 
 /**
  * Plugin Information File
@@ -58,6 +59,8 @@ class Plugin extends PluginBase
 
         // register event listener
         Event::listen(ReputationChanged::class, SyncBadges::class);
+        // Event::listen(BadgeAwarded::class, SyncBadges::class);
+        // Event::listen(BadgeRemoved::class, SyncBadges::class);
 
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();
