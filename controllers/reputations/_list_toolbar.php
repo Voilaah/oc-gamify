@@ -4,7 +4,8 @@
             <i class="icon-info"></i>
             <p>These showing the history of people who has been completed the mission for reputation.</p>
             <p>if you're developer and want to adding new reputation mission try on your CLI like this :
-                <code>php artisan voilaah:gamify-point UserCreated</code></p>
+                <code>php artisan voilaah:gamify-point plugin.namespace UserCreated</code>
+            </p>
         </div>
     </div>
 </div>

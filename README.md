@@ -334,7 +334,7 @@ Badge levels are stored as `tinyint` so keep the value as an integer value. It w
 To generate a badge you can run following provided command:
 
 ```bash
-php artisan voilaah:gamify-badge FirstContribution
+php artisan voilaah:gamify-badge plugin.namespace FirstContribution
 ```
 
 It will create a BadgeType class named `FirstContribution` under `app/Gamify/Badges/` folder.
