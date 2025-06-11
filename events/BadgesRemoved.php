@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 
 
-class BadgeRemoved
+class BadgesRemoved
 {
     use Dispatchable, SerializesModels;
 
@@ -19,20 +19,20 @@ class BadgeRemoved
     public $user;
 
     /**
-     * @var int
+     * @var array int
      */
-    public $badgeId;
+    public $badgesId;
 
 
     /**
      * Create a new event instance.
      *
      * @param $user
-     * @param $badgeId
+     * @param $badgesId
      */
-    public function __construct($user, int $badgeId)
+    public function __construct($user, array $badgesId)
     {
         $this->user = $user;
-        $this->badgeId = $badgeId;
+        $this->badgesId = $badgesId;
     }
 }

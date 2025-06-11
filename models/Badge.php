@@ -3,8 +3,8 @@
 namespace Voilaah\Gamify\Models;
 
 use Model;
-use Voilaah\Gamify\Events\BadgeAwarded;
-use Voilaah\Gamify\Events\BadgeRemoved;
+use Voilaah\Gamify\Events\BadgesAwarded;
+use Voilaah\Gamify\Events\BadgesRemoved;
 
 class Badge extends Model
 {
@@ -41,9 +41,13 @@ class Badge extends Model
      */
     public function awardTo($user)
     {
-        $this->users()->attach($user);
+        // if it does not already contains the userId
+        if (!$this->userBadgeExists($this->id, $user->id)) {
 
-        BadgeAwarded::dispatch($user, $this->id);
+            $this->users()->attach($user);
+
+            BadgesAwarded::dispatch($user, [$this->id]);
+        }
 
     }
 
@@ -56,7 +60,27 @@ class Badge extends Model
     {
         $this->users()->detach($user);
 
-        BadgeRemoved::dispatch($user, $this->id);
+        BadgesRemoved::dispatch($user, [$this->id]);
 
     }
+
+    public function userBadgeExists($badgeId, $userId)
+    {
+        return $this->userBadgeQuery($badgeId, $userId)
+            ->exists();
+    }
+
+    public function userBadgeQuery($badgeId, $userId)
+    {
+        return $this->users()->where([
+            ['user_id', $userId],
+            ['badge_id', $badgeId],
+        ]);
+    }
+
+    public function getIconImgAttribute()
+    {
+        return $this->icon;
+    }
+
 }

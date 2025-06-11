@@ -72,4 +72,14 @@ class UserStreak extends Model
         return $query->whereIn('streak_type', $filtered);
     }
 
+    public function setStreakDatesBackendAttribute($value)
+    {
+        $this->attributes['streak_dates'] = $value;
+    }
+
+    public function getStreakDatesBackendAttribute()
+    {
+        return $this->attributes['streak_dates'];
+    }
+
 }

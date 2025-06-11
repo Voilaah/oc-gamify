@@ -50,7 +50,7 @@ navigation:
             _section_activity:
                 label: Activity
                 itemType: section
-            userloginstreaks:
+            userstreaks:
                 label: User Streaks
                 icon: icon-list
                 url: voilaah/gamify/userstreaks

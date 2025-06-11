@@ -19,7 +19,7 @@
             </th>
             <th
                 scope="col"
-                class="py-2 pl-0 pr-4 font-semibold text-right sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
+                class="hidden py-2 pl-0 pr-4 font-semibold text-right sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
             >
                 {{ 'Earned at' | trans }}
             </th>
@@ -36,7 +36,7 @@
                     {{ item.point }}
                 </td>
                 <td
-                    class="py-2 pl-0 pr-4 text-right text-black-400 sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
+                    class="hidden py-2 pl-0 pr-4 text-right text-black-400 sktext-sm lg:sktext-sm-lg sm:table-cell sm:pr-6 lg:pr-8"
                 >
                     <time datetime="2023-01-23T11:00">{{ item.created_at | date('F jS Y \\a\\t h:i A') }}</time>
                 </td>

@@ -47,7 +47,7 @@ abstract class BadgeType
      * Check if badge already exists for a user
      *
      * @return bool
-     * @throws InvalidPayeeModel
+     *
      */
     public function badgeExists($user)
     {
@@ -107,9 +107,11 @@ abstract class BadgeType
      */
     public function getIcon()
     {
-        return property_exists($this, 'icon')
+        return
+            property_exists($this, 'icon')
             ? $this->icon
-            : $this->getDefaultIcon();
+            : $this->getDefaultIcon()
+        ;
     }
 
     /**
@@ -173,7 +175,7 @@ abstract class BadgeType
     {
         return sprintf(
             '%s/%s%s',
-            rtrim(config('gamify.badge_icon_folder', 'images/badges'), '/'),
+            rtrim(config('gamify.badge_icon_folder', 'assets/images/badges'), '/'),
             Str::kebab(class_basename($this)),
             config('gamify.badge_icon_extension', '.svg')
         );

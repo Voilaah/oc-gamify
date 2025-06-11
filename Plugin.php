@@ -3,17 +3,17 @@
 namespace Voilaah\Gamify;
 
 use Backend, Event;
-use FontLib\Table\Type\name;
 use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
+use Voilaah\Gamify\Events\BadgesAwarded;
 use Voilaah\Gamify\Listeners\SyncBadges;
+use Voilaah\Gamify\Listeners\NotifyBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
 use Voilaah\Gamify\Events\ReputationChanged;
 use Voilaah\Gamify\Components\UserReputation;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
-use Voilaah\Gamify\Events\BadgeAwarded;
 
 /**
  * Plugin Information File
@@ -59,8 +59,8 @@ class Plugin extends PluginBase
 
         // register event listener
         Event::listen(ReputationChanged::class, SyncBadges::class);
-        // Event::listen(BadgeAwarded::class, SyncBadges::class);
-        // Event::listen(BadgeRemoved::class, SyncBadges::class);
+        Event::listen(BadgesAwarded::class, NotifyBadges::class);
+        // Event::listen(BadgesRemoved::class, SyncBadges::class);
 
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();

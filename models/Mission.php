@@ -3,8 +3,8 @@
 namespace Voilaah\Gamify\Models;
 
 use Model;
-use Voilaah\Gamify\Events\BadgeAwarded;
-use Voilaah\Gamify\Events\BadgeRemoved;
+use Voilaah\Gamify\Events\BadgesAwarded;
+use Voilaah\Gamify\Events\BadgesRemoved;
 
 class Mission extends Model
 {
@@ -38,7 +38,7 @@ class Mission extends Model
     {
         $this->users()->attach($user);
 
-        BadgeAwarded::dispatch($user, $this->id);
+        BadgesAwarded::dispatch($user, [$this->id]);
 
     }
 
@@ -51,7 +51,7 @@ class Mission extends Model
     {
         $this->users()->detach($user);
 
-        BadgeRemoved::dispatch($user, $this->id);
+        BadgesRemoved::dispatch($user, [$this->id]);
 
     }
 }

@@ -9,4 +9,5 @@ toolbar:
     buttons: list_toolbar
     search:
         prompt: "backend::lang.list.search_prompt"
+recordUrl: voilaah/gamify/userstreaks/update/:id
 filter: config_filter.yaml

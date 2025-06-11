@@ -1,0 +1,8 @@
+fields:
+    streak_type:
+        label: Streak type
+        disabled: true
+    streak_dates_backend:
+        label: Streak dates
+        type: textarea
+        size: normal

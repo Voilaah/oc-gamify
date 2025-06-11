@@ -2,8 +2,9 @@
 
 namespace Voilaah\Gamify\Behaviors\Traits;
 
-use Voilaah\Gamify\Events\BadgeAwarded;
-use Voilaah\Gamify\Events\BadgeRemoved;
+use Voilaah\Gamify\Events\BadgesAwarded;
+use Voilaah\Gamify\Events\BadgesRemoved;
+use Voilaah\Gamify\Events\BadgesUpdated;
 
 trait HasBadges
 {
@@ -19,6 +20,8 @@ trait HasBadges
         $badgeIds = app('badges')->filter
             ->qualifier($user)
             ->map->getBadgeId();
+
+        // traceLog($badgeIds);
 
         $ids = $user->badges()->sync($badgeIds);
         /* $ids = $user->badges()->syncWithPivotValues(
@@ -36,17 +39,18 @@ trait HasBadges
          * 'updated' =>[],
          * ]
          */
+        // traceLog($ids);
 
         if (!empty($ids['attached'])) {
-            foreach ($ids['attached'] as $badgeId) {
-                BadgeAwarded::dispatch($user, $badgeId);
-            }
+            BadgesAwarded::dispatch($user, $ids['attached']);
         }
 
         if (!empty($ids['detached'])) {
-            foreach ($ids['detached'] as $badgeId) {
-                BadgeRemoved::dispatch($user, $badgeId);
-            }
+            BadgesRemoved::dispatch($user, $ids['detached']);
+        }
+
+        if (!empty($ids['updated'])) {
+            BadgesUpdated::dispatch($user, $ids['updated']);
         }
     }
 }

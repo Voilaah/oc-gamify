@@ -43,6 +43,8 @@ class Badges extends Controller
 
     public function listExtendQuery($query)
     {
+        // if we were needing to keep the user sorting as well
+        // study this plugin https://octobercms.com/plugin/sixgweb-listsaver
         $query->orderBy('level')->orderBy('sort_order');
     }
 

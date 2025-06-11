@@ -24,7 +24,7 @@ return [
     'mission_model' => env('GAMIFY_MISSION_MODEL', \Voilaah\Gamify\Models\Mission::class),
     'streak_model' => env('GAMIFY_STREAK_MODEL', \Voilaah\Gamify\Models\UserStreak::class),
 
-    // Where all icon stored
+    // Where all icon stored (related to the media folder)
     'badge_icon_folder' => env('GAMIFY_BADGE_ICON_FOLDER', 'images/badges/'),
     'mission_icon_folder' => env('GAMIFY_MISSION_ICON_FOLDER', 'images/missions/'),
 

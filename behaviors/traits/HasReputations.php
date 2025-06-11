@@ -81,8 +81,7 @@ trait HasReputations
      */
     public function reducePoint($point = 1)
     {
-
-        if ($this->model->{$this->getReputationField()} > $point) {
+        if ($this->model->{$this->getReputationField()} >= $point) {
 
             $this->model->decrement($this->getReputationField(), $point);
 

@@ -11,6 +11,7 @@ columns:
         select: concat(first_name, ' ', last_name)
         searchable: true
         sortable: true
+        clickable: true
     user_email:
         label: Email
         type: text
@@ -18,6 +19,7 @@ columns:
         select: email
         searchable: true
         sortable: true
+        clickable: true
     streak_type_label:
         label: Streak Type
         sortable: false

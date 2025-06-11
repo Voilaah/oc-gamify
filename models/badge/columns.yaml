@@ -16,6 +16,20 @@ columns:
         clickable: false
         invisible: true
         width: 50px
+    iconImg:
+        label: Icon
+        searchable: true
+        clickable: false
+        type: image
+        width: 42px
+        height: 42px
+    icon:
+        label: Icon path
+        searchable: true
+        clickable: false
+        # type: image
+        # width: 42px
+        # height: 42px
     name:
         label: Name
         searchable: true
@@ -24,11 +38,6 @@ columns:
         label: Description
         searchable: true
         clickable: false
-    icon:
-        label: Icon
-        searchable: true
-        clickable: false
-
     created_at:
         label: Created At
         type: date
