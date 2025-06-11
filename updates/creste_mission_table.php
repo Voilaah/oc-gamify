@@ -33,7 +33,7 @@ class AddMissionLevelsTable extends Migration
         Schema::dropIfExists('voilaah_gamify_mission_levels');
     }
 }
-
+/*
 // updates/add_mission_progress_table.php
 use October\Rain\Database\Updates\Migration;
 
@@ -126,4 +126,4 @@ class ModifyMissionsTable extends Migration
             $table->dropColumn(['slug', 'category', 'is_active', 'is_repeatable', 'expires_at']);
         });
     }
-}
+} */
