@@ -59,7 +59,7 @@ class Badge extends Model
 
             $this->users()->attach($user);
 
-            BadgesAwarded::dispatch($user, $this->id);
+            BadgesAwarded::dispatch($user, [$this->id]);
 
         }
     }
@@ -73,7 +73,7 @@ class Badge extends Model
     {
         $this->users()->detach($user);
 
-        BadgesRemoved::dispatch($user, $this->id);
+        BadgesRemoved::dispatch($user, [$this->id]);
 
     }
 

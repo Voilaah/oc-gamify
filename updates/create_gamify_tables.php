@@ -1,4 +1,5 @@
 <?php
+
 namespace Voilaah\Gamify\Updates;
 
 use Schema;
@@ -36,14 +37,13 @@ class CreateGamifyTables extends Migration
             $table->timestamps();
 
             $table->index(['subject_type', 'subject_id']);
-
         });
 
         // badges table
         Schema::create('voilaah_gamify_badges', function ($table) {
             $table->increments('id');
+            $table->string('unique_key')->index();
             $table->string('name')->index();
-            $table->string('slug')->index();
             $table->smallInteger('sort_order')->default(1)->index();
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
@@ -125,6 +125,5 @@ class CreateGamifyTables extends Migration
         Schema::dropIfExists('voilaah_gamify_user_streaks');
 
         Schema::enableForeignKeyConstraints();
-
     }
 }
