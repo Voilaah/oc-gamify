@@ -30,6 +30,20 @@ class Mission extends Model
     }
 
     /**
+     * @param $subject
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public function isAchieved($subject)
+    {
+        if (class_exists($this->class)) {
+            return (new $this->class)->levelIsAchieved($this->level, $subject);
+        }
+
+        return config('gamify.mission_is_archived');
+    }
+
+    /**
      * Award badge to a user
      *
      * @param $user

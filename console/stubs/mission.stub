@@ -1,0 +1,33 @@
+<?php
+
+namespace {{namespace_php}}\Badges;
+
+use Voilaah\Gamify\Classes\MissionType;
+
+class {{studly_name}} extends MissionType
+{
+    /**
+     * Name for mission
+     *
+     * @var string
+     */
+    protected $name = '';
+
+    /**
+     * Description for mission
+     *
+     * @var string
+     */
+    protected $description = '';
+
+    /**
+     * Check is user qualifies for mission
+     *
+     * @param $user
+     * @return bool
+     */
+    public function qualifier($user)
+    {
+        return $user->getPoints() >= 1000;
+    }
+}

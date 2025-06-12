@@ -12,6 +12,7 @@ use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
 use Voilaah\Gamify\Events\ReputationChanged;
 use Voilaah\Gamify\Components\UserReputation;
+use Voilaah\Gamify\Console\MakeMissionCommand;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
 
@@ -31,7 +32,7 @@ class Plugin extends PluginBase
     {
         $this->registerConsoleCommand('voilaah.gamify_point', MakePointCommand::class);
         $this->registerConsoleCommand('voilaah.gamify_badge', MakeBadgeCommand::class);
-        // $this->registerConsoleCommand('voilaah.gamify_mission', MakeBadgeCommand::class);
+        $this->registerConsoleCommand('voilaah.gamify_mission', MakeMissionCommand::class);
 
         // `php artisan cache:forget gamify.badges.all`
         $this->app->singleton('badges', function () {

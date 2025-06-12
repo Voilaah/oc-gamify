@@ -51,4 +51,10 @@ return [
     // Namespaces
     'badge_namespace' => env('GAMIFY_BADGE_NAMESPACE', 'App\Badges'),
     'mission_namespace' => env('GAMIFY_MISSION_NAMESPACE', 'App\Missions'),
+
+    // Badge achieved vy default if check function not exit
+    'badge_is_archived' => false,
+    'mission_is_archived' => false,
+    // point achieved vy default if check function not exit
+    'point_is_archived' => true,
 ];
