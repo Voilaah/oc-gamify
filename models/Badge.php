@@ -9,7 +9,7 @@ use Voilaah\Gamify\Events\BadgesRemoved;
 class Badge extends Model
 {
     /* use \October\Rain\Database\Traits\Sortable; */
-    use \October\Rain\Database\Traits\Sluggable;
+    /* use \October\Rain\Database\Traits\Sluggable; */
 
     /**
      * @var string The database table used by the model.
@@ -18,7 +18,7 @@ class Badge extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    public $slugs = ['slug' => 'name'];
+    /* public $slugs = ['slug' => 'name']; */
 
     public function __construct()
     {

@@ -46,8 +46,8 @@ class Plugin extends PluginBase
         // `php artisan cache:forget gamify.missions.all`
         $this->app->singleton('missions', function () {
             return cache()->rememberForever('gamify.missions.all', function () {
-                return $this->getMissions()->map(function ($badge) {
-                    return new $badge;
+                return $this->getMissions()->map(function ($mission) {
+                    return new $mission;
                 });
             });
         });
@@ -180,7 +180,7 @@ class Plugin extends PluginBase
             }
         }
 
-        // traceLog(collect($missions)->toArray());
+        traceLog(collect($missions)->toArray());
         return collect($missions);
     }
 

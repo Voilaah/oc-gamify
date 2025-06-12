@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace_php}}\Badges;
+namespace {{namespace_php}}\Missions;
 
 use Voilaah\Gamify\Classes\MissionType;
 

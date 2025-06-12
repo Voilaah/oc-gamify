@@ -68,4 +68,9 @@ class Mission extends Model
         BadgesRemoved::dispatch($user, [$this->id]);
 
     }
+
+    public function getIconImgAttribute()
+    {
+        return $this->icon;
+    }
 }
