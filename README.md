@@ -313,7 +313,7 @@ This event also broadcast in configured channel name so you can listen to it fro
 
 ## 🏆 🏅 Achievement Badges
 
-Similar to Point type you have badges. They can be given to users based on rank or any other criteria. You should define badge level in `config/gamify.php`.
+Similar to Point type you have badges. They can be given to users based on rank or any other criteria. You should define badge level in `config/php`.
 
 ```php
 // All the levels for badge
@@ -412,6 +412,13 @@ $user->resetPoint();
 ```
 
 You dont need to generate point class for this.
+
+### Mission
+
+Console command to refresh one user or all users mission achievements.
+```
+php artisan gamify:refresh-user-missions
+```
 
 ### Testing
 

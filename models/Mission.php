@@ -36,7 +36,6 @@ class Mission extends Model
      */
     public function isAchieved($subject)
     {
-        traceLog('mission isachieved');
         if (class_exists($this->class)) {
             return (new $this->class)->levelIsAchieved($this->level, $subject);
         }
@@ -54,7 +53,6 @@ class Mission extends Model
         $this->users()->attach($user);
 
         BadgesAwarded::dispatch($user, [$this->id]);
-
     }
 
     /**
@@ -67,7 +65,6 @@ class Mission extends Model
         $this->users()->detach($user);
 
         BadgesRemoved::dispatch($user, [$this->id]);
-
     }
 
     public function getIconImgAttribute()

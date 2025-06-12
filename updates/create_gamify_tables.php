@@ -75,6 +75,9 @@ class CreateGamifyTables extends Migration
             $table->string('icon')->nullable();
             $table->tinyInteger('level')->default(config('gamify.mission_default_level', 1))->index();
             $table->smallInteger('sort_order')->default(1)->index();
+
+            $table->unique(['mission_code']);
+
             $table->timestamps();
         });
 

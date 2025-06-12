@@ -1,11 +1,12 @@
 <?php
 
-namespace Voilaah\Gamify\Classes;
+namespace Voilaah\Gamify\Classes\Missions;
 
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;
+use Voilaah\Gamify\Exceptions\LevelNotDefined;
 
-abstract class BadgeType
+abstract class BaseMission
 {
     /**
      * @var Model
@@ -19,7 +20,7 @@ abstract class BadgeType
      */
     public function __construct()
     {
-        $this->model = $this->storeBadge();
+        $this->model = $this->storeMission();
     }
 
     /**
@@ -31,17 +32,29 @@ abstract class BadgeType
     abstract public function qualifier($user);
 
     /**
-     * Check for badge point allowed
+     * Get the mission levels
      *
-     * @param PointType $pointType
+     * @param $user
      * @return bool
      */
-    protected function isDuplicateBadgeAllowed()
+    abstract public function getCode(): array;
+    abstract public function getLevels(): array;
+
+    public function getLevelRequirement(int $level): ?int
     {
-        return property_exists($this, 'allowDuplicates')
-            ? $this->allowDuplicates
-            : false;
+        return $this->getLevels()[$level - 1] ?? null;
     }
+
+    public function getMaxLevel(): int
+    {
+        return count($this->getLevels());
+    }
+
+    public function isEnabled(): bool
+    {
+        return true;
+    }
+
 
     /**
      * Check if badge already exists for a user
@@ -49,23 +62,6 @@ abstract class BadgeType
      * @return bool
      *
      */
-    public function badgeExists($user)
-    {
-        return $this->badgeQuery($user)->exists();
-    }
-
-    /**
-     * Get badge query for this badge
-     *
-     * @return Builder     *
-     */
-    public function badgeQuery($user)
-    {
-        return $user->badges()->where([
-            ['user_id', $user->id],
-            ['badge_id', $this->getBadgeId()],
-        ]);
-    }
 
     /**
      * Get model instance of the badge
@@ -85,7 +81,7 @@ abstract class BadgeType
     {
         return property_exists($this, 'name')
             ? $this->name
-            : $this->getDefaultBadgeName();
+            : $this->getDefaultMissionName();
     }
 
     /**
@@ -110,8 +106,7 @@ abstract class BadgeType
         return
             property_exists($this, 'icon')
             ? $this->icon
-            : $this->getDefaultIcon()
-        ;
+            : $this->getDefaultIcon();
     }
 
     /**
@@ -125,7 +120,7 @@ abstract class BadgeType
     }
 
     /**
-     * Get the level for badge
+     * Get the level for mission
      *
      * @return int
      */
@@ -133,16 +128,16 @@ abstract class BadgeType
     {
         $level = property_exists($this, 'level')
             ? $this->level
-            : config('gamify.badge_default_level', 1);
+            : config('gamify.mission_default_level', 1);
 
         if (is_numeric($level)) {
             return $level;
         }
 
         return Arr::get(
-            config('gamify.badge_levels', []),
+            config('gamify.mission_levels', []),
             $level,
-            config('gamify.badge_default_level', 1)
+            config('gamify.mission_default_level', 1)
         );
     }
 
@@ -151,7 +146,7 @@ abstract class BadgeType
      *
      * @return mixed
      */
-    public function getBadgeId()
+    public function getMissionId()
     {
         return $this->model->getKey();
     }
@@ -161,7 +156,7 @@ abstract class BadgeType
      *
      * @return string
      */
-    protected function getDefaultBadgeName()
+    protected function getDefaultMissionName()
     {
         return ucwords(Str::snake(class_basename($this), ' '));
     }
@@ -175,9 +170,9 @@ abstract class BadgeType
     {
         return sprintf(
             '%s/%s%s',
-            rtrim(config('gamify.badge_icon_folder', 'assets/images/badges'), '/'),
+            rtrim(config('gamify.mission_icon_folder', 'assets/images/missions'), '/'),
             Str::kebab(class_basename($this)),
-            config('gamify.badge_icon_extension', '.svg')
+            config('gamify.mission_icon_extension', '.svg')
         );
     }
 
@@ -186,19 +181,20 @@ abstract class BadgeType
      *
      * @return mixed
      */
-    protected function storeBadge()
+    protected function storeMission()
     {
-        $badge = app(config('gamify.badge_model'))
-            ->firstOrNew(['name' => $this->getName()])
+        $mission = app(config('gamify.mission_model'))
+            ->firstOrNew(['mission_code' => $this->getCode()])
             ->forceFill([
+                'name' => $this->getName(),
                 'level' => $this->getLevel(),
                 'sort_order' => $this->getSortOrder(),
                 'description' => $this->getDescription(),
                 'icon' => $this->getIcon()
             ]);
 
-        $badge->save();
+        $mission->save();
 
-        return $badge;
+        return $mission;
     }
 }

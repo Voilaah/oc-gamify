@@ -4,9 +4,8 @@ namespace Voilaah\Gamify\Classes;
 
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;
-use Voilaah\Gamify\Exceptions\LevelNotDefined;
 
-abstract class MissionType
+abstract class BaseBadge
 {
     /**
      * @var Model
@@ -20,7 +19,7 @@ abstract class MissionType
      */
     public function __construct()
     {
-        $this->model = $this->storeMission();
+        $this->model = $this->storeBadge();
     }
 
     /**
@@ -30,55 +29,6 @@ abstract class MissionType
      * @return bool
      */
     abstract public function qualifier($user);
-
-    /**
-     * Get the mission levels
-     *
-     * @param $user
-     * @return bool
-     */
-    abstract public function getLevels(): array;
-
-    // Optional: defines what progress metric to track (e.g. completed_courses)
-    public function getTrackedMetric(): string
-    {
-        return 'custom'; // or 'completed_courses'
-    }
-
-    public function getLevelRequirement(int $level): ?int
-    {
-        return $this->getLevels()[$level - 1] ?? null;
-    }
-
-    public function getMaxLevel(): int
-    {
-        return count($this->getLevels());
-    }
-
-    /**
-     * @param $level
-     * @param $subject
-     *
-     * @return \Illuminate\Config\Repository|mixed
-     * @throws \Voilaah\Gamify\Exceptions\LevelNotDefined
-     */
-    public function levelIsAchieved($level, $subject)
-    {
-        $level = array_search($level, config('gamify.bmission_levels'));
-
-        if (!$level) {
-            throw new LevelNotDefined("Level [ id : $level ] must be define in gamify config file .");
-        }
-
-        $method = Str::camel($level);
-
-        if (method_exists($this, $method)) {
-            return $this->{$method}($this, $subject);
-        }
-
-        return config('gamify.mission_is_archived');
-    }
-
 
     /**
      * Check for badge point allowed
@@ -99,9 +49,9 @@ abstract class MissionType
      * @return bool
      *
      */
-    public function missionExists($user)
+    public function badgeExists($user)
     {
-        return $this->missionQuery($user)->exists();
+        return $this->badgeQuery($user)->exists();
     }
 
     /**
@@ -109,11 +59,11 @@ abstract class MissionType
      *
      * @return Builder     *
      */
-    public function missionQuery($user)
+    public function badgeQuery($user)
     {
-        return $user->missions()->where([
+        return $user->badges()->where([
             ['user_id', $user->id],
-            ['badge_id', $this->getMissionId()],
+            ['badge_id', $this->getBadgeId()],
         ]);
     }
 
@@ -135,7 +85,7 @@ abstract class MissionType
     {
         return property_exists($this, 'name')
             ? $this->name
-            : $this->getDefaultMissionName();
+            : $this->getDefaultBadgeName();
     }
 
     /**
@@ -160,8 +110,7 @@ abstract class MissionType
         return
             property_exists($this, 'icon')
             ? $this->icon
-            : $this->getDefaultIcon()
-        ;
+            : $this->getDefaultIcon();
     }
 
     /**
@@ -175,7 +124,7 @@ abstract class MissionType
     }
 
     /**
-     * Get the level for mission
+     * Get the level for badge
      *
      * @return int
      */
@@ -183,16 +132,16 @@ abstract class MissionType
     {
         $level = property_exists($this, 'level')
             ? $this->level
-            : config('gamify.mission_default_level', 1);
+            : config('gamify.badge_default_level', 1);
 
         if (is_numeric($level)) {
             return $level;
         }
 
         return Arr::get(
-            config('gamify.mission_levels', []),
+            config('gamify.badge_levels', []),
             $level,
-            config('gamify.mission_default_level', 1)
+            config('gamify.badge_default_level', 1)
         );
     }
 
@@ -201,7 +150,7 @@ abstract class MissionType
      *
      * @return mixed
      */
-    public function getMissionId()
+    public function getBadgeId()
     {
         return $this->model->getKey();
     }
@@ -211,7 +160,7 @@ abstract class MissionType
      *
      * @return string
      */
-    protected function getDefaultMissionName()
+    protected function getDefaultBadgeName()
     {
         return ucwords(Str::snake(class_basename($this), ' '));
     }
@@ -225,9 +174,9 @@ abstract class MissionType
     {
         return sprintf(
             '%s/%s%s',
-            rtrim(config('gamify.mission_icon_folder', 'assets/images/missions'), '/'),
+            rtrim(config('gamify.badge_icon_folder', 'assets/images/badges'), '/'),
             Str::kebab(class_basename($this)),
-            config('gamify.mission_icon_extension', '.svg')
+            config('gamify.badge_icon_extension', '.svg')
         );
     }
 
@@ -236,20 +185,19 @@ abstract class MissionType
      *
      * @return mixed
      */
-    protected function storeMission()
+    protected function storeBadge()
     {
-        $mission = app(config('gamify.mission_model'))
-            ->firstOrNew(['mission_code' => $this->getCode()])
+        $badge = app(config('gamify.badge_model'))
+            ->firstOrNew(['name' => $this->getName()])
             ->forceFill([
-                'name' => $this->getName(),
                 'level' => $this->getLevel(),
                 'sort_order' => $this->getSortOrder(),
                 'description' => $this->getDescription(),
                 'icon' => $this->getIcon()
             ]);
 
-        $mission->save();
+        $badge->save();
 
-        return $mission;
+        return $badge;
     }
 }

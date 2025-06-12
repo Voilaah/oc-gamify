@@ -7,6 +7,7 @@ use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
 use Voilaah\Gamify\Events\BadgesAwarded;
 use Voilaah\Gamify\Listeners\SyncBadges;
+use Voilaah\Gamify\Classes\MissionManager;
 use Voilaah\Gamify\Listeners\NotifyBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
@@ -33,6 +34,7 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('voilaah.gamify_point', MakePointCommand::class);
         $this->registerConsoleCommand('voilaah.gamify_badge', MakeBadgeCommand::class);
         $this->registerConsoleCommand('voilaah.gamify_mission', MakeMissionCommand::class);
+        $this->registerConsoleCommand('gamify:refresh-user-missions', \Voilaah\Gamify\Console\RefreshUserMissions::class);
 
         // `php artisan cache:forget gamify.badges.all`
         $this->app->singleton('badges', function () {
@@ -52,13 +54,11 @@ class Plugin extends PluginBase
             });
         }); */
 
-        $this->app->singleton('gamify.missions', function () {
-            $default = [
-            ];
-
+        /* $this->app->singleton('gamify.missions', function () {
+            $default = [];
             $external = Event::fire('voilaah.gamify.registerMissions');
             return array_merge($default, ...array_filter($external));
-        });
+        }); */
     }
 
     /**
@@ -86,6 +86,15 @@ class Plugin extends PluginBase
 
         // Example: register a streak type for example purpose
         // \Voilaah\Gamify\Classes\Streak\StreakManager::register('user_login', trans('User Login'), \Voilaah\Gamify\Classes\Streak\StreakTypes\UserLoginStreak::class);
+
+        $this->app->singleton('gamify.missions', function () {
+            $manager = new MissionManager();
+
+            // Let external plugins register their missions
+            $external = Event::fire('voilaah.gamify.registerMissions', [$manager]);
+
+            return $manager;
+        });
     }
 
     public function registerComponents()
