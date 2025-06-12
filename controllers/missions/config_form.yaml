@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Badge
+
+# Model Form Field configuration
+form: $/voilaah/gamify/models/mission/fields.yaml
+
+# Model Class name
+modelClass: Voilaah\Gamify\Models\Mission
+
+# Default redirect location
+defaultRedirect: voilaah/gamify/missions
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: voilaah/gamify/missions/update/:id
+    redirectClose: voilaah/gamify/missions
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: voilaah/gamify/missions
+    redirectClose: voilaah/gamify/missions
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

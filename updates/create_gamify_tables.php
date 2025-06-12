@@ -42,7 +42,7 @@ class CreateGamifyTables extends Migration
         // badges table
         Schema::create('voilaah_gamify_badges', function ($table) {
             $table->increments('id');
-            $table->string('unique_key')->index();
+            /* $table->string('unique_key')->index(); */
             $table->string('name')->index();
             $table->smallInteger('sort_order')->default(1)->index();
             $table->string('description')->nullable();
@@ -69,10 +69,12 @@ class CreateGamifyTables extends Migration
         // missions table
         Schema::create('voilaah_gamify_missions', function ($table) {
             $table->increments('id');
-            $table->string('name');
+            /* $table->string('unique_key')->index(); */
+            $table->string('name')->index();
+            $table->smallInteger('sort_order')->default(1)->index();
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
-            $table->tinyInteger('level')->default(config('gamify.mission_default_level', 1));
+            $table->tinyInteger('level')->default(config('gamify.mission_default_level', 1))->index();
             $table->timestamps();
         });
 

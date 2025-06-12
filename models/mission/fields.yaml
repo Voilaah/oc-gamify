@@ -1,0 +1,18 @@
+# ===================================
+#  Field Definitions
+# ===================================
+
+fields:
+    icon:
+        label: Icon
+        type: mediafinder
+        mode: image
+        span: left
+    name:
+        label: Name
+        disabled: true
+        span: left
+    description:
+        label: Description
+        disabled: true
+        span: left
