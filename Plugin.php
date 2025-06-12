@@ -41,6 +41,15 @@ class Plugin extends PluginBase
                 });
             });
         });
+
+        // `php artisan cache:forget gamify.missions.all`
+        $this->app->singleton('missions', function () {
+            return cache()->rememberForever('gamify.missions.all', function () {
+                return $this->getMissions()->map(function ($badge) {
+                    return new $badge;
+                });
+            });
+        });
     }
 
     /**
@@ -143,6 +152,35 @@ class Plugin extends PluginBase
 
         // traceLog(collect($badges)->toArray());
         return collect($badges);
+    }
+
+    /**
+     * Get all the mission inside app/Gamify/Missions folder
+     *
+     * @return Collection
+     */
+    protected function getMissions()
+    {
+
+        $missionRootNamespace = config(
+            'gamify.mission_namespace',
+            __NAMESPACE__ . '\Missions'
+        );
+
+        $path = str_replace('\\', '/', strtolower($missionRootNamespace));
+        $path .= '/';
+
+        $missions = [];
+
+        // foreach (glob(plugins_path('/voilaah/gamify/missions/') . '*.php') as $file) {
+        foreach (glob(plugins_path($path) . '*.php') as $file) {
+            if (is_file($file)) {
+                $missions[] = app($missionRootNamespace . '\\' . pathinfo($file, PATHINFO_FILENAME));
+            }
+        }
+
+        // traceLog(collect($missions)->toArray());
+        return collect($missions);
     }
 
     protected function bindBehaviorsRainLabUser()
