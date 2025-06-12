@@ -8,20 +8,8 @@ use Voilaah\Gamify\Events\BadgesRemoved;
 
 class Badge extends Model
 {
-    /**
-     * change the primary key so that we can control the key itself
-     * in case we add / remove or update new Badge while user has badges
-     *
-     * @var string
-     */
-    // protected $primaryKey = 'unique_key';
-
-    /**
-     * boolean that if false indicates that the primary key is not an incrementing integer value.
-     *
-     * @var bool
-     */
-    // public $incrementing = false;
+    /* use \October\Rain\Database\Traits\Sortable; */
+    use \October\Rain\Database\Traits\Sluggable;
 
     /**
      * @var string The database table used by the model.
@@ -30,7 +18,7 @@ class Badge extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $dates = ['created_at', 'updated_at'];
+    public $slugs = ['slug' => 'name'];
 
     public function __construct()
     {
@@ -42,7 +30,6 @@ class Badge extends Model
         $this->belongsToMany['users'] = [
             config('gamify.payee_model'),
             'table' => 'voilaah_gamify_user_badges',
-            // 'otherKey' => 'unique_key'
             'timestamps' => true
         ];
     }
@@ -60,8 +47,8 @@ class Badge extends Model
             $this->users()->attach($user);
 
             BadgesAwarded::dispatch($user, [$this->id]);
-
         }
+
     }
 
     /**

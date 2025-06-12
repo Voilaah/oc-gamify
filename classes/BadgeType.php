@@ -4,7 +4,6 @@ namespace Voilaah\Gamify\Classes;
 
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;
-use Voilaah\Gamify\Exceptions\BadgeUniqueKeyNotSet;
 
 abstract class BadgeType
 {
@@ -14,8 +13,6 @@ abstract class BadgeType
     protected $model;
 
     public $allowDuplicates = true;
-
-    public $unique_key = null;
 
     /**
      * BadgeType constructor.
@@ -79,7 +76,6 @@ abstract class BadgeType
     {
         return $this->model;
     }
-
     /**
      * Get name of badge
      *
@@ -126,16 +122,6 @@ abstract class BadgeType
     public function getSortOrder()
     {
         return $this->sort_order ?? 1;
-    }
-
-    /**
-     * Get the level for badge
-     *
-     * @return int
-     */
-    public function getUniqueKey()
-    {
-        return $this->unique_key ?? throw new BadgeUniqueKeyNotSet();
     }
 
     /**
@@ -205,7 +191,6 @@ abstract class BadgeType
         $badge = app(config('gamify.badge_model'))
             ->firstOrNew(['name' => $this->getName()])
             ->forceFill([
-                'unique_key' => $this->getUniqueKey(),
                 'level' => $this->getLevel(),
                 'sort_order' => $this->getSortOrder(),
                 'description' => $this->getDescription(),
