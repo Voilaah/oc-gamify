@@ -69,28 +69,31 @@ class CreateGamifyTables extends Migration
         // missions table
         Schema::create('voilaah_gamify_missions', function ($table) {
             $table->increments('id');
-            /* $table->string('unique_key')->index(); */
+            $table->string('mission_code')->index();
             $table->string('name')->index();
-            $table->smallInteger('sort_order')->default(1)->index();
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
             $table->tinyInteger('level')->default(config('gamify.mission_default_level', 1))->index();
+            $table->smallInteger('sort_order')->default(1)->index();
             $table->timestamps();
         });
 
         // user_missions pivot
         Schema::create('voilaah_gamify_user_missions', function ($table) {
             $table->unsignedBigInteger('user_id');
-            $table->unsignedInteger('mission_id');
+            /* $table->unsignedInteger('mission_id'); */
+            $table->string('mission_code')->index(); // e.g. 'complete_courses'
             $table->timestamps();
 
-            $table->primary(['user_id', 'mission_id']);
+            $table->unique(['user_id', 'mission_code']);
+            $table->primary(['user_id', 'mission_code']);
+            /* $table->primary(['user_id', 'mission_id']); */
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('mission_id')->references('id')->on('voilaah_gamify_missions')->onDelete('cascade');
+            $table->foreign('mission_code')->references('mission_code')->on('voilaah_gamify_missions')->onDelete('cascade');
 
             // Optional index if needed:
-            $table->index(['mission_id']);
+            // $table->index(['mission_id']);
         });
 
         // user streaks

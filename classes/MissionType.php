@@ -31,6 +31,29 @@ abstract class MissionType
      */
     abstract public function qualifier($user);
 
+    /**
+     * Get the mission levels
+     *
+     * @param $user
+     * @return bool
+     */
+    abstract public function getLevels(): array;
+
+    // Optional: defines what progress metric to track (e.g. completed_courses)
+    public function getTrackedMetric(): string
+    {
+        return 'custom'; // or 'completed_courses'
+    }
+
+    public function getLevelRequirement(int $level): ?int
+    {
+        return $this->getLevels()[$level - 1] ?? null;
+    }
+
+    public function getMaxLevel(): int
+    {
+        return count($this->getLevels());
+    }
 
     /**
      * @param $level
@@ -216,8 +239,9 @@ abstract class MissionType
     protected function storeMission()
     {
         $mission = app(config('gamify.mission_model'))
-            ->firstOrNew(['name' => $this->getName()])
+            ->firstOrNew(['mission_code' => $this->getCode()])
             ->forceFill([
+                'name' => $this->getName(),
                 'level' => $this->getLevel(),
                 'sort_order' => $this->getSortOrder(),
                 'description' => $this->getDescription(),

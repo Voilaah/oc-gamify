@@ -33,12 +33,14 @@ class UserGamifyBehavior extends ExtensionBase
 
         $model->belongsToMany['missions'] = [
             config('gamify.mission_model'),
-            'table' => 'voilaah_gamify_user_missions'
+            'table' => 'voilaah_gamify_user_missions',
+            'otherKey' => 'mission_code'
         ];
 
         $model->belongsToMany['missions_count'] = [
             config('gamify.mission_model'),
             'table' => 'voilaah_gamify_user_missions',
+            'otherKey' => 'mission_code',
             'count' => true
         ];
 

@@ -44,12 +44,20 @@ class Plugin extends PluginBase
         });
 
         // `php artisan cache:forget gamify.missions.all`
-        $this->app->singleton('missions', function () {
+        /* $this->app->singleton('missions', function () {
             return cache()->rememberForever('gamify.missions.all', function () {
                 return $this->getMissions()->map(function ($mission) {
                     return new $mission;
                 });
             });
+        }); */
+
+        $this->app->singleton('gamify.missions', function () {
+            $default = [
+            ];
+
+            $external = Event::fire('voilaah.gamify.registerMissions');
+            return array_merge($default, ...array_filter($external));
         });
     }
 

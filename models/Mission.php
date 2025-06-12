@@ -36,6 +36,7 @@ class Mission extends Model
      */
     public function isAchieved($subject)
     {
+        traceLog('mission isachieved');
         if (class_exists($this->class)) {
             return (new $this->class)->levelIsAchieved($this->level, $subject);
         }
