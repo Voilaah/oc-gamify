@@ -38,7 +38,9 @@ trait HasBadges
     {
         $user = is_null($user) ? $this : $user;
 
-        $badgeIds = app('badges')->filter
+        $badgeIds = app('gamify.badges')
+            ->allEnabled()
+            ->filter
             ->qualifier($user)
             ->map->getBadgeId();
 

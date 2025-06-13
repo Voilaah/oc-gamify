@@ -1,6 +1,6 @@
 <?php
 
-namespace Voilaah\Gamify\Classes;
+namespace Voilaah\Gamify\Classes\Badge;
 
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +29,11 @@ abstract class BaseBadge
      * @return bool
      */
     abstract public function qualifier($user);
+
+    public function isEnabled(): bool
+    {
+        return true;
+    }
 
     /**
      * Check for badge point allowed

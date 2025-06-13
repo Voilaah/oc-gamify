@@ -24,7 +24,7 @@ class Mission extends Model
          */
         $this->belongsToMany['users'] = [
             config('gamify.payee_model'),
-            'table' => 'voilaah_gamify_user_missions',
+            'table' => 'voilaah_gamify_user_mission_progress',
             'timestamps' => true
         ];
     }
@@ -70,5 +70,10 @@ class Mission extends Model
     public function getIconImgAttribute()
     {
         return $this->icon;
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order');
     }
 }

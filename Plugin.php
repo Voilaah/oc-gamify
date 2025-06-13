@@ -2,12 +2,12 @@
 
 namespace Voilaah\Gamify;
 
-use Backend, Event;
+use Backend, Event, App;
 use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
 use Voilaah\Gamify\Events\BadgesAwarded;
 use Voilaah\Gamify\Listeners\SyncBadges;
-use Voilaah\Gamify\Classes\MissionManager;
+use Voilaah\Gamify\Classes\Mission\MissionManager;
 use Voilaah\Gamify\Listeners\NotifyBadges;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
@@ -16,6 +16,7 @@ use Voilaah\Gamify\Components\UserReputation;
 use Voilaah\Gamify\Console\MakeMissionCommand;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
+use Voilaah\Gamify\Classes\Badge\BadgeManager;
 
 /**
  * Plugin Information File
@@ -37,28 +38,14 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('gamify:refresh-user-missions', \Voilaah\Gamify\Console\RefreshUserMissions::class);
 
         // `php artisan cache:forget gamify.badges.all`
-        $this->app->singleton('badges', function () {
+        /* $this->app->singleton('badges', function () {
             return cache()->rememberForever('gamify.badges.all', function () {
                 return $this->getBadges()->map(function ($badge) {
                     return new $badge;
                 });
             });
-        });
-
-        // `php artisan cache:forget gamify.missions.all`
-        /* $this->app->singleton('missions', function () {
-            return cache()->rememberForever('gamify.missions.all', function () {
-                return $this->getMissions()->map(function ($mission) {
-                    return new $mission;
-                });
-            });
         }); */
 
-        /* $this->app->singleton('gamify.missions', function () {
-            $default = [];
-            $external = Event::fire('voilaah.gamify.registerMissions');
-            return array_merge($default, ...array_filter($external));
-        }); */
     }
 
     /**
@@ -87,14 +74,30 @@ class Plugin extends PluginBase
         // Example: register a streak type for example purpose
         // \Voilaah\Gamify\Classes\Streak\StreakManager::register('user_login', trans('User Login'), \Voilaah\Gamify\Classes\Streak\StreakTypes\UserLoginStreak::class);
 
-        $this->app->singleton('gamify.missions', function () {
-            $manager = new MissionManager();
-
-            // Let external plugins register their missions
-            $external = Event::fire('voilaah.gamify.registerMissions', [$manager]);
-
+        $this->app->singleton('gamify.badges', function () {
+            $manager = new BadgeManager();
+            // Let external plugins register their badges
+            $external = Event::fire('voilaah.gamify.registerBadges', [$manager]);
             return $manager;
         });
+
+        // Phase 1: Create empty manager & register it early
+        $this->app->singleton('gamify.missions', function () {
+            return new MissionManager();
+        });
+
+        // Phase 2: Let plugins register their missions in booted callback
+        \App::booted(function () {
+            $manager = app('gamify.missions');
+
+            // Fire this AFTER all plugins booted, allows other plugin to register Mission
+            Event::fire('voilaah.gamify.registerMissions', [$manager]);
+
+            // Now register event listeners
+            $manager->registerEventListeners();
+
+        });
+
     }
 
     public function registerComponents()
@@ -144,6 +147,7 @@ class Plugin extends PluginBase
     }
 
     /**
+     * @deprecated message
      * Get all the badge inside app/Gamify/Badges folder
      *
      * @return Collection
@@ -173,6 +177,7 @@ class Plugin extends PluginBase
     }
 
     /**
+     * @deprecated
      * Get all the mission inside app/Gamify/Missions folder
      *
      * @return Collection
@@ -196,8 +201,6 @@ class Plugin extends PluginBase
                 $missions[] = app($missionRootNamespace . '\\' . pathinfo($file, PATHINFO_FILENAME));
             }
         }
-
-        traceLog(collect($missions)->toArray());
         return collect($missions);
     }
 

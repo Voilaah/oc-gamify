@@ -3,12 +3,6 @@
 # ===================================
 
 columns:
-    level:
-        label: level
-        searchable: true
-        sortable: true
-        clickable: false
-        width: 50px
     sort_order:
         label: sort_order
         searchable: false
@@ -30,14 +24,18 @@ columns:
         # type: image
         # width: 42px
         # height: 42px
+    code:
+        label: Code
+        searchable: true
+        clickable: false
     name:
         label: Name
         searchable: true
         clickable: false
-    description:
-        label: Description
-        searchable: true
-        clickable: false
+    # description:
+    #     label: Description
+    #     searchable: true
+    #     clickable: false
     created_at:
         label: Created At
         type: date

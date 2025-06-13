@@ -17,10 +17,13 @@ trait HasBadges
     {
         $user = is_null($user) ? $this->model : $user;
 
-        $badgeIds = app('badges')->filter
+        $badgeIds = app('gamify.badges')
+            ->allEnabled()
+            ->filter
             ->qualifier($user)
             ->map->getBadgeId();
 
+        // traceLog("====== badgeIds ======");
         // traceLog($badgeIds);
 
         $ids = $user->badges()->sync($badgeIds);

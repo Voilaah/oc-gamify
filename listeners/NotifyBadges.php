@@ -36,7 +36,6 @@ class NotifyBadges
                 Notifications::TYPE_BADGE, /* "voilaah.skillup::notifications.gamify.badge.earned.inapp.title", */
                 "voilaah.skillup::notifications.gamify.badge.earned.inapp.body",
                 [
-                    // 'icon' => 'ti ti-rosette-filled', // TODO with Jax icons list, we need to use a proper library
                     'id' => $badgeId,
                     'title' => $badge->name
                 ]
@@ -55,8 +54,8 @@ class NotifyBadges
                         ]); */
         }
 
-        traceLog("==== add badges to session =====");
-        traceLog($badgesData);
+        /* traceLog("==== add badges to session =====");
+        traceLog($badgesData); */
 
         Session::put('gamify.badges.earned', $badgesData);
     }

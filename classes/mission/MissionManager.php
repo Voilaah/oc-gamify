@@ -1,8 +1,9 @@
 <?php
 
-namespace Voilaah\Gamify\Classes\Missions;
+namespace Voilaah\Gamify\Classes\Mission;
 
-use Voilaah\Gamify\Classes\Missions\BaseMission;
+use Event;
+use Voilaah\Gamify\Classes\Mission\BaseMission;
 
 class MissionManager
 {
@@ -34,12 +35,16 @@ class MissionManager
      *
      * @return array<string, BaseMission>
      */
-    public function allEnabled(): array
+
+    public function allEnabled(): \Illuminate\Support\Collection
     {
-        return array_filter(
+        return collect($this->missions)->filter(function ($mission) {
+            return method_exists($mission, 'isEnabled') ? $mission->isEnabled() : true;
+        });
+        /* return array_filter(
             $this->missions,
             fn($mission) => method_exists($mission, 'isEnabled') ? $mission->isEnabled() : true
-        );
+        ); */
     }
 
     /**
@@ -64,10 +69,25 @@ class MissionManager
     /**
      * Manually trigger an event handler on all missions.
      */
-    public function handleEventForAll(string $eventName, array $payload = []): void
+    public function registerEventListeners(): void
     {
+        /* \Log::info('[Gamify] Registered mission event listeners'); */
         foreach ($this->allEnabled() as $mission) {
-            $mission->handleEvent($eventName, $payload);
+            /* \Log::info("--[Gamify] Registered mission event listener for {$mission->getName()}"); */
+            /* $mission->handleEvent($eventName, $payload); */
+            foreach ($mission->getSubscribedEvents() as $event => $payloadBuilder) {
+
+                Event::listen($event, function (...$args) use ($event, $payloadBuilder, $mission) {
+                    $payload = $payloadBuilder(...$args);
+
+                    // Defensive: must return a user
+                    if (!isset($payload['user'])) {
+                        return;
+                    }
+
+                    $mission->handleEvent($event, $payload);
+                });
+            }
         }
     }
 }
