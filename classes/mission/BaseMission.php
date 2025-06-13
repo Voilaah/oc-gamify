@@ -478,6 +478,7 @@ abstract class BaseMission
             // Not reached goal yet
             $progress->value = $currentValue;
             $progress->total_value = $totalValue;
+            $progress->last_reached_at = now();
         }
 
         $progress->save();
