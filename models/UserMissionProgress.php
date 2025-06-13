@@ -25,7 +25,10 @@ class UserMissionProgress extends Model
     protected $fillable = [
         'user_id',
         'mission_code',
-        'current_level',
+        'level',
+        'value',
+        'is_completed',
+        'completed_at',
         'last_reached_at',
     ];
 
@@ -33,6 +36,7 @@ class UserMissionProgress extends Model
      * @var array Dates
      */
     protected $dates = [
+        'completed_at',
         'last_reached_at',
         'deleted_at'
     ];

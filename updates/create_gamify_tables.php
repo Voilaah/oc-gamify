@@ -17,10 +17,10 @@ class CreateGamifyTables extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::dropIfExists('voilaah_gamify_reputations');
-        Schema::dropIfExists('voilaah_gamify_badges');
         Schema::dropIfExists('voilaah_gamify_user_badges');
-        Schema::dropIfExists('voilaah_gamify_missions');
+        Schema::dropIfExists('voilaah_gamify_badges');
         Schema::dropIfExists('voilaah_gamify_user_mission_progress');
+        Schema::dropIfExists('voilaah_gamify_missions');
         Schema::dropIfExists('voilaah_gamify_user_streaks');
 
         Schema::enableForeignKeyConstraints();
@@ -89,7 +89,8 @@ class CreateGamifyTables extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('mission_code', 191)->index(); // e.g. 'courses_explorer'
-            $table->unsignedTinyInteger('current_level')->default(1);
+            $table->unsignedTinyInteger('level')->default(1);
+            $table->integer('value')->default(0);
             $table->timestamp('last_reached_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->boolean('is_completed')->default(false);

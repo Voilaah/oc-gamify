@@ -15,6 +15,11 @@ abstract class BaseMission
      */
     protected $model;
 
+    /**
+     * @var \Voilaah\Gamify\Models\UserMissionProgress
+     */
+    protected $userProgress;
+
 
     /**
      * BadgeType constructor.
@@ -34,10 +39,8 @@ abstract class BaseMission
      *   - 'qualifier' => Closure(User $user): bool
      */
     abstract public function getLevels(): array;
-
     abstract public function getGoalForLevel(int $level): int;
-
-    abstract public function getCurrentValue(User $user, int $level): int;
+    abstract public function getActualValue(User $user): int;
     abstract function isCompleted(User $user): bool;
 
     /**
@@ -217,6 +220,23 @@ abstract class BaseMission
         return $mission;
     }
 
+    protected function userMissionProgressQuery(User $user)
+    {
+        if ($this->userProgress)
+            return $this->userProgress;
+
+        $this->userProgress = UserMissionProgress::query()
+            ->where('user_id', $user->id)
+            ->where('mission_code', $this->getCode());
+
+        return $this->userProgress;
+
+        /* return UserMissionProgress::query()
+            ->where('user_id', $user->id)
+            ->where('mission_code', $this->getCode())
+        ; */
+    }
+
     public function markAsCompleted(User $user): void
     {
         UserMissionProgress::updateOrInsert(
@@ -239,19 +259,56 @@ abstract class BaseMission
         };
     }
 
+    public function getCurrentValue(User $user): int
+    {
+        $value = 0;
+
+        $userMissionProgress = $this->userMissionProgressQuery($user)->first();
+
+        if ($userMissionProgress) {
+            $value = $userMissionProgress->value ?? 0;
+        }
+
+        return $value;
+    }
+
     /**
      * Evaluate the current level of the user.
      */
     public function getCurrentLevel(User $user): int
     {
+        $level = 1;
+
+        $userMissionProgress = $this->userMissionProgressQuery($user)->first();
+
+        if ($userMissionProgress) {
+            $level = $userMissionProgress->level;
+            if ($userMissionProgress->is_completed) {
+                $level = 999;
+            }
+        }
+
+        return $level;
+    }
+
+    public function calculateLevel(User $user)
+    {
+        $level = 1;
+
         // Handle completed missions first
         if (method_exists($this, 'isCompleted') && $this->isCompleted($user)) {
             return 999; // Special code to indicate mission is fully complete
         }
 
-        $level = 0;
+        foreach (array_reverse($this->getLevels(), true) as $index => $data) {
+            $qualifier = $data['qualifier'];
+            if (is_callable($qualifier) && $qualifier($user)) {
+                return $index; // return highest qualified level immediately
+            }
+        }
+        return 1; // default to level 1 if none qualify
 
-        foreach ($this->getLevels() as $index => $data) {
+        /* foreach ($this->getLevels() as $index => $data) {
             $qualifier = $data['qualifier'];
             if (!is_callable($qualifier)) {
                 continue;
@@ -264,13 +321,13 @@ abstract class BaseMission
             }
         }
 
-        return $level;
+        return $level; */
     }
 
     /**
      * Whether the user qualifies for a specific level.
      */
-    public function qualifiesForLevel(User $user, int $level): bool
+    /* public function qualifiesForLevel(User $user, int $level): bool
     {
         $levels = $this->getLevels();
 
@@ -279,7 +336,7 @@ abstract class BaseMission
         }
 
         return call_user_func($levels[$level]['qualifier'], $user);
-    }
+    } */
 
     /**
      * Return a map of events this mission subscribes to.
@@ -307,31 +364,36 @@ abstract class BaseMission
         $user = $payload['user'];
 
         // Log event received with user ID and event name
-        \Log::info("Mission {$this->getCode()} handling event '{$event}' for user ID {$user->id}", [
+        \Log::info("Mission {$this->getCode()} handling event '{$event}' for user ID {$user->id}", /* [
             'event' => $event,
             'user_id' => $user->id,
             'payload' => $payload,
-        ]);
+        ] */);
 
-        $newLevel = $this->getCurrentLevel($user);
+        $newLevel = $this->calculateLevel($user);
 
         // You can also log the current level for extra clarity
         \Log::info("Mission {$this->getCode()} user {$user->id} current level evaluated as {$newLevel}");
 
-
+        // $progress = $this->userMissionProgressQuery($user);
         $progress = UserMissionProgress::firstOrNew([
             'user_id' => $user->id,
             'mission_code' => $this->getCode()
         ]);
 
-        if ($newLevel > $progress->current_level) {
-            $progress->current_level = $newLevel;
+        $progress->value = $this->getActualValue($user, $newLevel);
+
+        if ($newLevel > $progress->level) {
+            $progress->level = $newLevel;
+            $progress->is_completed = $this->isCompleted($user);
             $progress->last_reached_at = now();
-            $progress->save();
 
             // Optionally fire an event
             \Event::fire('voilaah.gamify.mission.levelUp', [$user, $this, $newLevel]);
         }
+
+        $progress->save();
+
 
         if ($newLevel === 999 && !$this->hasBeenCompleted($user)) {
             $this->markAsCompleted($user);
@@ -340,11 +402,15 @@ abstract class BaseMission
 
     public function hasBeenCompleted(User $user): bool
     {
-        return DB::table('user_mission_progress')
-            ->where('user_id', $user->id)
-            ->where('mission_code', $this->getCode())
+        return $this->userMissionProgressQuery($user)
             ->where('is_completed', true)
             ->exists();
+
+        // return DB::table('user_mission_progress')
+        //     ->where('user_id', $user->id)
+        //     ->where('mission_code', $this->getCode())
+        //     ->where('is_completed', true)
+        //     ->exists();
     }
 
     /**
@@ -352,14 +418,16 @@ abstract class BaseMission
      */
     public function getProgress(User $user): array
     {
+        $progress = $this->userMissionProgressQuery($user)->first();
+
         $level = $this->getCurrentLevel($user);
-        $completed = $this->isCompleted($user);
+        $completed = $progress ? $progress->is_completed : false; /* $this->isCompleted($user); */
 
         return [
             'currentLevel' => $level,
             'description' => $this->getDescriptionForLevel($level),
+            'value' => $this->getCurrentValue($user), /* $this->getActualValue($user, $level), */
             'goal' => $this->getGoalForLevel($level),
-            'value' => $this->getCurrentValue($user, $level),
             'maxLevel' => $this->getMaxLevel(),
             'completed' => $completed,
             'data' => [
