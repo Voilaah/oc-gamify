@@ -1,0 +1,73 @@
+# ===================================
+#  Column Definitions
+# ===================================
+
+columns:
+    mission:
+        label: Mission
+        searchable: true
+        clickable: false
+        relation: mission
+        select: name
+        width: 200px
+    user:
+        label: User
+        searchable: true
+        clickable: false
+        relation: user
+        select: concat(first_name, ' ', last_name)
+        width: 200px
+    email:
+        label: User
+        searchable: true
+        invisible: true
+        clickable: false
+        relation: user
+        select: email
+        width: 200px
+    level:
+        label: Current level
+        searchable: true
+        sortable: true
+        clickable: false
+        width: 80px
+    value:
+        label: Current value
+        type: number
+        searchable: true
+        invisible: true
+        sortable: true
+        clickable: false
+        width: 80px
+    total_value:
+        label: Total value
+        type: number
+        searchable: true
+        invisible: true
+        sortable: true
+        clickable: false
+        width: 80px
+    last_reached_at:
+        label: last touch at
+        type: datetime
+        searchable: false
+        sortable: true
+        clickable: false
+    is_completed:
+        label: Completed?
+        type: switch
+        searchable: false
+        sortable: true
+        clickable: false
+    completed_at:
+        label: Completed at
+        type: datetime
+        searchable: false
+        sortable: true
+        invisible: true
+        clickable: false
+    created_at:
+        label: Created At
+        type: date
+        invisible: true
+        clickable: false

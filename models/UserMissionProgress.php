@@ -45,7 +45,12 @@ class UserMissionProgress extends Model
      * User relation
      */
     public $belongsTo = [
-        'user' => ['RainLab\User\Models\User']
+        'user' => ['RainLab\User\Models\User'],
+        'mission' => [
+            Mission::class,
+            'key' => 'mission_code',
+            'otherKey' => 'code',
+        ]
     ];
 
     /**
@@ -83,4 +88,15 @@ class UserMissionProgress extends Model
     {
         return $query->where('mission_code', $missionCode);
     }
+
+    public function getMissionsOptions(): array
+    {
+        $missions = [];
+        $all = app('gamify.missions')->allEnabled();
+        foreach ($all as $key => $mission) {
+            $missions[$mission->getCode()] = $mission->getName();
+        }
+        return $missions;
+    }
+
 }

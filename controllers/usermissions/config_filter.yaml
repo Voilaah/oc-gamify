@@ -1,0 +1,10 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+    courses:
+        label: Mission Type
+        scope: forMission
+        modelClass: Voilaah\Gamify\Models\UserMissionProgress
+        options: getMissionsOptions

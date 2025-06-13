@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: User Streak
+
+# Model Form Field configuration
+form: $/voilaah/gamify/models/usermission/fields.yaml
+
+# Model Class name
+modelClass: Voilaah\Gamify\Models\UserMissionProgress
+
+# Default redirect location
+defaultRedirect: voilaah/gamify/usermissions
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: voilaah/gamify/usermissions/update/:id
+    redirectClose: voilaah/gamify/usermissions
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: voilaah/gamify/usermissions
+    redirectClose: voilaah/gamify/usermissions
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
