@@ -90,7 +90,8 @@ class CreateGamifyTables extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('mission_code', 191)->index(); // e.g. 'courses_explorer'
             $table->unsignedTinyInteger('level')->default(1);
-            $table->integer('value')->default(0);
+            $table->unsignedInteger('value')->default(0);
+            $table->unsignedInteger('total_value')->default(0);
             $table->timestamp('last_reached_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->boolean('is_completed')->default(false);
