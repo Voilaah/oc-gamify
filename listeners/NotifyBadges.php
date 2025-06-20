@@ -47,11 +47,6 @@ class NotifyBadges
                 'type' => Notifications::TYPE_BADGE,
                 'icon' => $badge->icon,
             ];
-            /*
-                        $controller = new \Cms\Classes\Controller;
-                        $controller->dispatchBrowserEvent('badge:earned', [
-                            $badgesData
-                        ]); */
         }
 
         /* traceLog("==== add badges to session =====");
@@ -59,5 +54,4 @@ class NotifyBadges
 
         Session::put('gamify.badges.earned', $badgesData);
     }
-
 }
