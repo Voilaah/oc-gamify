@@ -32,6 +32,15 @@ class Badge extends Model
             'table' => 'voilaah_gamify_user_badges',
             'timestamps' => true
         ];
+
+        /**
+         * @return October\Rain\Database\Relations\BelongsTo
+         */
+        $this->belongsTo['mission'] = [
+            config('gamify.mission_model'),
+            'key' => 'mission_code',
+            'otherKey' => 'code',
+        ];
     }
 
     /**
@@ -81,6 +90,66 @@ class Badge extends Model
     public function getIconImgAttribute()
     {
         return $this->icon;
+    }
+
+    /**
+     * Check if this badge is linked to a mission
+     *
+     * @return bool
+     */
+    public function isMissionBadge(): bool
+    {
+        return $this->is_mission_badge && !empty($this->mission_code);
+    }
+
+    /**
+     * Award badge to user with mission context
+     *
+     * @param $user
+     * @param int|null $missionLevel
+     * @param string $context
+     */
+    public function awardToWithContext($user, $missionLevel = null, $context = 'manual')
+    {
+        if (!$this->userBadgeExists($this->id, $user->id)) {
+            $pivotData = [
+                'awarded_context' => $context,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+
+            if ($missionLevel) {
+                $pivotData['awarded_at_level'] = $missionLevel;
+            }
+
+            $this->users()->attach($user->id, $pivotData);
+            BadgesAwarded::dispatch($user, [$this->id]);
+        }
+    }
+
+    /**
+     * Scope for mission badges
+     */
+    public function scopeMissionBadges($query)
+    {
+        return $query->where('is_mission_badge', true);
+    }
+
+    /**
+     * Scope for specific mission
+     */
+    public function scopeForMission($query, $missionCode)
+    {
+        return $query->where('mission_code', $missionCode);
+    }
+
+    /**
+     * Scope for mission level
+     */
+    public function scopeForMissionLevel($query, $missionCode, $level)
+    {
+        return $query->where('mission_code', $missionCode)
+                    ->where('mission_level', $level);
     }
 
 }

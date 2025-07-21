@@ -11,3 +11,9 @@ v1.0.7: "Minor fix fetching getBadges() storing to Database."
 v1.0.8: 'Adds Auth Base to able switch User authentication in config/gamify.php, can switch to \Auth::class or \BackendAuth::class.'
 v1.1.0: "Create Backend Navigation Menus for gamify, showing Badges and Reputation."
 v1.1.1: "Create Backend Navigation Menus for gamify, showing Missions and Streaks."
+v1.2.0: 
+    - "Add mission-badge linking system for automatic badge awarding"
+    - add_mission_badge_linking.php
+v1.2.1:
+    - "Add meta field to user mission progress table for storing additional mission data"
+    - add_meta_to_user_mission_progress.php

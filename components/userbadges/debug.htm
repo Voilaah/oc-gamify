@@ -1,0 +1,44 @@
+<div style="background: #f0f0f0; border: 1px solid #ccc; padding: 20px; margin: 20px 0; font-family: monospace;">
+    <h3>🐛 UserBadges Debug Information</h3>
+    <div style="background: white; padding: 10px; margin: 10px 0;">
+        <strong>Component Data:</strong><br>
+        ShowProgress: {{ showProgress ? 'Yes' : 'No' }}<br>
+        Total Badges: {{ currentBadges|length }}<br>
+    </div>
+    
+    {% if currentBadges %}
+        {% for badge in currentBadges %}
+            <div style="background: white; border-left: 4px solid {{ badge.has_started ? (badge.status == 'earned' ? '#4CAF50' : '#FF9800') : '#ccc' }}; padding: 10px; margin: 10px 0;">
+                <strong>{{ badge.mission_name }}</strong><br>
+                <small>
+                    Mission Code: {{ badge.mission_code }}<br>
+                    Has Started: <strong>{{ badge.has_started ? 'YES' : 'NO' }}</strong><br>
+                    Status: <strong>{{ badge.status }}</strong><br>
+                    Current Level: {{ badge.current_level }}/{{ badge.max_level }}<br>
+                    Progress: {{ badge.progress }}/{{ badge.goal }} ({{ badge.completion_percentage }}%)<br>
+                    Total Progress: {{ badge.total_progress }}<br>
+                    Is Completed: {{ badge.is_completed ? 'Yes' : 'No' }}<br>
+                    CSS Classes: {{ badge.status }} {{ badge.is_completed ? 'mission-complete' : '' }} {{ not badge.has_started ? 'not-started' : '' }}
+                </small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>❌ No badges found</p>
+    {% endif %}
+    
+    {% if stats %}
+        <div style="background: white; padding: 10px; margin: 10px 0;">
+            <strong>Statistics:</strong><br>
+            Total Missions: {{ stats.total_missions }}<br>
+            Started Missions: {{ stats.started_missions }}<br>
+            Not Started: {{ stats.not_started_missions }}<br>
+            Completed: {{ stats.completed_missions }}<br>
+            Earned Current Badges: {{ stats.earned_current_badges }}
+        </div>
+    {% endif %}
+</div>
+
+<!-- Original Component Display -->
+<div style="margin-top: 30px;">
+    {% include '@userbadges/default.htm' %}
+</div>

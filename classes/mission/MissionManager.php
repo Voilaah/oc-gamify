@@ -90,4 +90,61 @@ class MissionManager
             }
         }
     }
+
+    /**
+     * Auto-generate mission badges for all registered missions
+     */
+    public function generateMissionBadges(): void
+    {
+        foreach ($this->allEnabled() as $mission) {
+            $this->createMissionBadges($mission);
+        }
+    }
+
+    /**
+     * Create badges for a specific mission based on its levels
+     */
+    protected function createMissionBadges($mission): void
+    {
+        $levels = $mission->getLevels();
+        $badgeModel = config('gamify.badge_model');
+        
+        foreach ($levels as $level => $config) {
+            // Create level badge
+            $badgeModel::firstOrCreate([
+                'mission_code' => $mission->getCode(),
+                'mission_level' => $level,
+                'is_mission_badge' => true
+            ], [
+                'name' => \Lang::get('voilaah.gamify::lang.badges.mission_level', [
+                    'mission' => $mission->getName(),
+                    'level' => $level
+                ]),
+                'description' => \Lang::get('voilaah.gamify::lang.badges.level_description', [
+                    'level' => $level,
+                    'mission' => $mission->getName()
+                ]),
+                'icon' => $mission->getIcon(),
+                'level' => $level,
+                'sort_order' => $level
+            ]);
+        }
+
+        // Create completion badge
+        $badgeModel::firstOrCreate([
+            'mission_code' => $mission->getCode(),
+            'mission_level' => 999,
+            'is_mission_badge' => true
+        ], [
+            'name' => \Lang::get('voilaah.gamify::lang.badges.mission_master', [
+                'mission' => $mission->getName()
+            ]),
+            'description' => \Lang::get('voilaah.gamify::lang.badges.completion_description', [
+                'mission' => $mission->getName()
+            ]),
+            'icon' => $mission->getIcon(),
+            'level' => 999,
+            'sort_order' => 999
+        ]);
+    }
 }

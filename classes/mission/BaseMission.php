@@ -6,7 +6,10 @@ use RainLab\User\Models\User;
 use Illuminate\Support\{Str, Arr};
 use Illuminate\Database\Eloquent\Model;
 use Voilaah\Gamify\Models\UserMissionProgress;
+use Voilaah\Gamify\Classes\PointType;
 use DB;
+use Lang;
+use App;
 
 abstract class BaseMission
 {
@@ -37,6 +40,7 @@ abstract class BaseMission
      *   - 'label' => string
      *   - 'description' => string
      *   - 'qualifier' => Closure(User $user): bool
+     *   - 'points' => int (optional)
      */
     abstract public function getLevels(): array;
     abstract public function getActualValue(User $user): int;
@@ -91,7 +95,14 @@ abstract class BaseMission
             return null;
         }
 
-        return $this->getLevels()[$level]['description'] ?? 'Unknown';
+        $levelData = $this->getLevels()[$level];
+
+        // Check for translation key first
+        if (isset($levelData['descriptionKey'])) {
+            return Lang::get($levelData['descriptionKey'], [], null, App::getLocale());
+        }
+
+        return $levelData['description'] ?? Lang::get('voilaah.gamify::lang.common.unknown');
     }
 
     public function getGoalForLevel(int $level): ?int
@@ -106,8 +117,25 @@ abstract class BaseMission
         return 0;
     }
 
+    public function getPointsForLevel(int $level): ?int
+    {
+        if ($level == 999) {
+            return property_exists($this, 'completionPoints') ? $this->completionPoints : null;
+        }
+
+        if (!array_key_exists($level, $this->getLevels())) {
+            return null;
+        }
+
+        return $this->getLevels()[$level]['points'] ?? null;
+    }
+
     public function getCompletionMissionLabel(): string
     {
+        if (property_exists($this, 'completionLabelKey')) {
+            return Lang::get($this->completionLabelKey, [], null, App::getLocale());
+        }
+
         return property_exists($this, 'completionLabel')
             ? $this->completionLabel
             : $this->getDefaultCompletionLabel();
@@ -125,24 +153,32 @@ abstract class BaseMission
     }
 
     /**
-     * Get name of badge
+     * Get name of mission
      *
      * @return string
      */
     public function getName()
     {
+        if (property_exists($this, 'nameKey')) {
+            return Lang::get($this->nameKey, [], null, App::getLocale());
+        }
+
         return property_exists($this, 'name')
             ? $this->name
             : $this->getDefaultMissionName();
     }
 
     /**
-     * Get description of badge
+     * Get description of mission
      *
      * @return string
      */
     public function getDescription()
     {
+        if (property_exists($this, 'descriptionKey')) {
+            return Lang::get($this->descriptionKey, [], null, App::getLocale());
+        }
+
         return $this->description ?? '';
     }
 
@@ -294,10 +330,23 @@ abstract class BaseMission
 
     public function getLevelLabel(int $level): string
     {
-        return match ($level) {
-            999 => 'Mission Complete',
-            default => $this->getLevels()[$level]['label'] ?? 'Unknown',
-        };
+        if ($level === 999) {
+            return Lang::get('voilaah.gamify::lang.common.mission_complete');
+        }
+
+        $levels = $this->getLevels();
+        if (!isset($levels[$level])) {
+            return Lang::get('voilaah.gamify::lang.common.unknown');
+        }
+
+        $levelData = $levels[$level];
+
+        // Check for translation key first
+        if (isset($levelData['labelKey'])) {
+            return Lang::get($levelData['labelKey'], [], null, App::getLocale());
+        }
+
+        return $levelData['label'] ?? Lang::get('voilaah.gamify::lang.common.unknown');
     }
 
     public function getCurrentValue(User $user): int
@@ -431,6 +480,11 @@ abstract class BaseMission
         $currentLevel = $progress->level ?? 1;
         $currentValue = $progress->value ?? 0;
         $totalValue = $progress->total_value ?? 0;
+        
+        // Ensure progress record has correct initial values
+        if (!$progress->level) $progress->level = 1;
+        if (!$progress->value) $progress->value = 0;
+        if (!$progress->total_value) $progress->total_value = 0;
 
         // Prevent overflow if user already completed final level
         if (!isset($levels[$currentLevel])) {
@@ -456,26 +510,33 @@ abstract class BaseMission
 
         // Check if level up is needed
         if ($currentValue >= $levelGoal) {
-            $progress->value = 0; // reset for next level
+            // Award points and fire events for the completed level BEFORE resetting
+            $completedLevel = $currentLevel;
+            $this->awardPointsForLevel($user, $completedLevel);
+            \Event::fire('gamify.mission.levelUp', [$user, $this, $completedLevel]);
+            \Log::info("Mission {$this->getCode()} user {$user->id} completed level {$completedLevel}");
+
             $progress->total_value = $totalValue;
             $progress->last_reached_at = now();
 
             if ($hasNextLevel) {
+                // Move to next level and reset progress
                 $progress->level += 1;
-                \Event::fire('gamify.mission.levelUp', [$user, $this, $progress->level]);
+                $progress->value = 0; // reset for next level
+                \Log::info("Mission {$this->getCode()} user {$user->id} moved to level {$progress->level}");
             } else {
+                // Mission completed entirely
                 $progress->is_completed = true;
                 $progress->completed_at = now();
-                \Log::info("Mission {$this->getCode()} user {$user->id} completed mission.");
+                $progress->value = $levelGoal; // Keep the final value for display
+                \Log::info("Mission {$this->getCode()} user {$user->id} completed entire mission.");
                 \Event::fire('gamify.mission.completed', [$user, $this]);
+
+                // Award completion bonus
+                $this->awardCompletionPoints($user);
             }
-            // $progress->is_completed = $this->isCompleted($user);
-
-            \Log::info("Mission {$this->getCode()} user {$user->id} leveled up to {$progress->level}");
-
-            \Event::fire('gamify.mission.levelUp', [$user, $this, $progress->level]);
         } else {
-            // Not reached goal yet
+            // Not reached goal yet - normal progress update
             $progress->value = $currentValue;
             $progress->total_value = $totalValue;
             $progress->last_reached_at = now();
@@ -512,15 +573,52 @@ abstract class BaseMission
     public function getProgress(User $user): array
     {
         $progress = $this->getOrCreateUserMissionProgress($user);
-
         $level = $this->getCurrentLevel($user, $progress);
-        $completed = $this->isCompleted($progress); /* $this->isCompleted($user); */
+        $completed = $this->isCompleted($progress);
 
+        // If mission is fully completed, show completion status
+        if ($completed) {
+            return [
+                'currentLevel' => 999,
+                'description' => $this->getCompletionMissionLabel(),
+                'value' => $this->getMaxLevel(),
+                'goal' => $this->getMaxLevel(),
+                'maxLevel' => $this->getMaxLevel(),
+                'completed' => true,
+                'data' => [
+                    'code' => $this->getCode(),
+                    'name' => $this->getName(),
+                ],
+            ];
+        }
+
+        // Get current progress values
+        $currentValue = $this->getCurrentValue($user);
+        $currentGoal = $this->getGoalForLevel($level);
+
+        // If user just completed current level, show completion
+        if ($currentValue >= $currentGoal && $currentGoal > 0) {
+            return [
+                'currentLevel' => $level,
+                'description' => $this->getDescriptionForLevel($level) . ' ✅ Complete!',
+                'value' => $currentGoal, // Show full completion
+                'goal' => $currentGoal,
+                'maxLevel' => $this->getMaxLevel(),
+                'completed' => $completed,
+                'levelCompleted' => true, // Flag to indicate level just completed
+                'data' => [
+                    'code' => $this->getCode(),
+                    'name' => $this->getName(),
+                ],
+            ];
+        }
+
+        // Show normal progress toward current level
         return [
             'currentLevel' => $level,
             'description' => $this->getDescriptionForLevel($level),
-            'value' => $this->getCurrentValue($user), /* $this->getActualValue($user, $level), */
-            'goal' => $this->getGoalForLevel($level),
+            'value' => $currentValue,
+            'goal' => $currentGoal,
             'maxLevel' => $this->getMaxLevel(),
             'completed' => $completed,
             'data' => [
@@ -533,6 +631,64 @@ abstract class BaseMission
     public function isCompleted(UserMissionProgress $progress): bool
     {
         return $progress ? $progress->is_completed ?? false : false;
+    }
+
+    protected function awardPointsForLevel(User $user, int $level): void
+    {
+        $points = $this->getPointsForLevel($level);
+
+        if ($points && $points > 0) {
+            $pointType = $this->createMissionPointType($points, $level);
+            $pointType->setSubject($user);
+
+            if ($pointType->qualifier()) {
+                $user->givePoint($pointType);
+                \Log::info("Mission {$this->getCode()} awarded {$points} points to user {$user->id} for level {$level}");
+            }
+        }
+    }
+
+    protected function awardCompletionPoints(User $user): void
+    {
+        if (property_exists($this, 'completionPoints') && $this->completionPoints > 0) {
+            $pointType = $this->createMissionPointType($this->completionPoints, 999, 'Completion');
+            $pointType->setSubject($user);
+
+            if ($pointType->qualifier()) {
+                $user->givePoint($pointType);
+                \Log::info("Mission {$this->getCode()} awarded {$this->completionPoints} completion points to user {$user->id}");
+            }
+        }
+    }
+
+    protected function createMissionPointType(int $points, int $level, string $suffix = 'Level'): PointType
+    {
+        return new class ($points, $this->getName(), $level, $suffix, $this->getCode()) extends PointType {
+            protected $points;
+            protected $name;
+            protected $payee = 'id';
+
+            public function __construct(int $points, string $missionName, int $level, string $suffix, string $missionCode)
+            {
+                $this->points = $points;
+
+                if ($level === 999) {
+                    $this->name = Lang::get('voilaah.gamify::lang.points.mission_completion', [
+                        'mission' => $missionName
+                    ]);
+                } else {
+                    $this->name = Lang::get('voilaah.gamify::lang.points.mission_level', [
+                        'mission' => $missionName,
+                        'level' => $level
+                    ]);
+                }
+            }
+
+            public function payee()
+            {
+                return $this->getSubject();
+            }
+        };
     }
 
     public function ensureStored(): void

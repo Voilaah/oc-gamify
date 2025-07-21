@@ -1,0 +1,84 @@
+<div id="user_badges max-w-full">
+    <div class="mb-4 h7">{{ 'Badges' | trans }}</div>
+    <div class="p-6 border bg-widget lg:p-10 border-black-100 rounded-2xl">
+        {% for level in badges | sort((a, b) => a.level <=> b.level) | column('level', 'level') | keys %}
+            <div class="mb-4 h7">{{ ('badge.levels.' ~ level) | trans }}</div>
+
+            <div class="badge-group-list{#  skillup-scroll-viewport#}">
+                {% for badge in badges | sort((a, b) => a.sort_order <=> b.sort_order) | filter(o => o.level == level) %}
+                    {% set badgeSelected = badge.getBadgeId() in eligibleIds %}
+                    <div class="achievement-badge {{ badgeSelected ? 'achieved cursor-pointer' : '' }}">
+                        <div class="relative">
+                            <img
+                                src="{{ badge.icon | media }}"
+                                alt="{{ badge.name }}"
+                                class="mx-auto"
+                                {{ not(badgeSelected) ? 'style="opacity: .3;"' }}
+                            />
+                            {% if badgeSelected %}
+                                <div class="absolute bottom-1 lg:right-5 right-2">
+                                    <img
+                                        class="size-6 img-badge-earned to-reveal"
+                                        src="{{ 'assets/images/badges/checked.png' | media }}"
+                                        alt="checked"
+                                    />
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="font-semibold text-center sktext-sm lg:sktext-sm-lg">{{ badge.name }}</div>
+                        <div class="text-center sktext-xxs lg:sktext-xxs-lg">{{ badge.description }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% put scripts %}
+    <script>
+        // request permission on page load
+        /*  document.addEventListener('DOMContentLoaded', function () {
+            if (!Notification) {
+                alert('Desktop notifications not available in your browser. Try Chromium.');
+                return;
+            }
+
+            if (Notification.permission !== 'granted') Notification.requestPermission();
+        }); */
+
+        window.addEventListener('load', () => {
+            const badges = document.querySelectorAll('.achievement-badge.achieved');
+            badges.forEach((badge) => {
+                badge.addEventListener('click', function (evt) {
+                    showNotification('Congrats!', {
+                        icon: 'https://skillup.staging-voilaah.com/storage/app/media/assets/images/badges/first-course-enrolled-badge.png',
+                        body: 'You earned a 15 diamonds!',
+                        vibrate: true,
+                    });
+                    showNotification('Congrats!', {
+                        icon: 'https://skillup.staging-voilaah.com/storage/app/media/assets/images/badges/first-course-enrolled-badge.png',
+                        body: 'You earned a new badge!',
+                        vibrate: true,
+                    });
+                });
+            });
+        });
+
+        function showNotification(title, options) {
+            if (!('Notification' in window)) {
+                console.error('This browser does not support notifications.');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                new Notification(title, options);
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        new Notification(title, options);
+                    }
+                });
+            }
+        }
+    </script>
+{% endput %}

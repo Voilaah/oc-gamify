@@ -7,16 +7,20 @@ use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
 use Voilaah\Gamify\Events\BadgesAwarded;
 use Voilaah\Gamify\Listeners\SyncBadges;
-use Voilaah\Gamify\Classes\Mission\MissionManager;
+use Voilaah\Gamify\Components\UserBadges;
 use Voilaah\Gamify\Listeners\NotifyBadges;
+use Voilaah\Gamify\Components\UserMissions;
 use Voilaah\Gamify\Console\MakeBadgeCommand;
 use Voilaah\Gamify\Console\MakePointCommand;
 use Voilaah\Gamify\Events\ReputationChanged;
 use Voilaah\Gamify\Components\UserReputation;
+use Voilaah\Gamify\Classes\Badge\BadgeManager;
 use Voilaah\Gamify\Console\MakeMissionCommand;
 use Voilaah\Gamify\Classes\Streak\StreakManager;
+use Voilaah\Gamify\Listeners\AwardMissionBadges;
+use Voilaah\Gamify\Classes\Mission\MissionManager;
 use Voilaah\Gamify\Components\UserActivityTracker;
-use Voilaah\Gamify\Classes\Badge\BadgeManager;
+use Voilaah\Gamify\Listeners\AwardCompletionBadges;
 
 /**
  * Plugin Information File
@@ -36,6 +40,11 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('voilaah.gamify_badge', MakeBadgeCommand::class);
         $this->registerConsoleCommand('voilaah.gamify_mission', MakeMissionCommand::class);
         $this->registerConsoleCommand('gamify:refresh-user-missions', \Voilaah\Gamify\Console\RefreshUserMissions::class);
+        $this->registerConsoleCommand('gamify:generate-mission-badges', \Voilaah\Gamify\Console\GenerateMissionBadges::class);
+        $this->registerConsoleCommand('gamify:test-course-explorer', \Voilaah\Gamify\Console\TestCourseExplorerMission::class);
+        $this->registerConsoleCommand('gamify:test-multilingual', \Voilaah\Gamify\Console\TestMultilingualMission::class);
+        $this->registerConsoleCommand('gamify:test-all-missions', \Voilaah\Gamify\Console\TestAllMissions::class);
+        $this->registerConsoleCommand('gamify:debug-progress', \Voilaah\Gamify\Console\DebugMissionProgress::class);
 
         // `php artisan cache:forget gamify.badges.all`
         /* $this->app->singleton('badges', function () {
@@ -67,6 +76,10 @@ class Plugin extends PluginBase
         Event::listen(BadgesAwarded::class, NotifyBadges::class);
         // Event::listen(BadgesRemoved::class, SyncBadges::class);
 
+        // register mission badge event listeners
+        Event::listen('gamify.mission.levelUp', AwardMissionBadges::class);
+        Event::listen('gamify.mission.completed', AwardCompletionBadges::class);
+
         // binding gamify behavior to user models
         $this->bindBehaviorsRainLabUser();
         $this->bindBehaviorsBackendUser();
@@ -90,6 +103,16 @@ class Plugin extends PluginBase
         \App::booted(function () {
             $manager = app('gamify.missions');
 
+            // Register all missions
+            // $manager->register(new \Voilaah\Gamify\Missions\CourseExplorerMissionTest());
+            $manager->register(new \Voilaah\Gamify\Missions\KnowledgeParagonMission());
+            $manager->register(new \Voilaah\Gamify\Missions\SkillVanguardMission());
+            $manager->register(new \Voilaah\Gamify\Missions\MasterySageMission());
+            $manager->register(new \Voilaah\Gamify\Missions\LearningEpicMission());
+            $manager->register(new \Voilaah\Gamify\Missions\FeedbackMaestroMission());
+            $manager->register(new \Voilaah\Gamify\Missions\SteadfastMonarchMission());
+            $manager->register(new \Voilaah\Gamify\Missions\CertificationVanguardMission());
+
             // Fire this AFTER all plugins booted, allows other plugin to register Mission
             Event::fire('voilaah.gamify.registerMissions', [$manager]);
 
@@ -105,6 +128,8 @@ class Plugin extends PluginBase
         return [
             UserActivityTracker::class => 'userActivityTracker',
             UserReputation::class => 'userReputation',
+            UserBadges::class => 'userBadges',
+            UserMissions::class => 'userMissions',
         ];
     }
 

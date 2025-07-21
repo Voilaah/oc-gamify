@@ -27,9 +27,11 @@ class UserMissionProgress extends Model
         'mission_code',
         'level',
         'value',
+        'total_value',
         'is_completed',
         'completed_at',
         'last_reached_at',
+        'meta',
     ];
 
     /**

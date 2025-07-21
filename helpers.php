@@ -38,6 +38,22 @@ if (!function_exists('givePoint')) {
         }
 
         $payee->givePoint($pointType);
+
+        // check if we have previous points earned
+        $existingPointsNotifications = Session::get('gamify.points.earned');
+        if (!is_array($existingPointsNotifications)) {
+            $existingPointsNotifications = [];
+        }
+
+        $existingPointsNotifications[] = [
+            'name' => $pointType->name,
+            // 'description' => $pointType->description,
+            'type' => get_class($pointType),
+            'points' => $pointType->points,
+            // 'icon' => $pointType->icon,
+        ];
+
+        Session::put('gamify.points.earned', $existingPointsNotifications);
     }
 }
 
@@ -86,5 +102,21 @@ if (!function_exists('short_number')) {
         }
 
         return !empty($n_format . $suffix) ? $n_format . $suffix : '0';
+    }
+}
+
+if (!function_exists('simulateCourseEnrollment')) {
+    /**
+     * Demo helper function to simulate course enrollment for testing CourseExplorerMission
+     * 
+     * @param \RainLab\User\Models\User $user
+     * @param mixed $course (optional course data)
+     */
+    function simulateCourseEnrollment($user, $course = null)
+    {
+        // Fire the course enrollment event that the mission listens for
+        Event::fire('skillup.course.enrolled', [$user, $course]);
+        
+        \Log::info("Simulated course enrollment for user {$user->id}");
     }
 }

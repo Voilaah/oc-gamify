@@ -7,7 +7,7 @@ This is a fork with fixes of the [gamify plugin](https://github.com/voilaah/gami
 - use `RainLab.User` v3
 - fix the `config/gamify.php` php code reading the `.env` variables `GAMIFY_BADGE_LEVELS`
 
-Use `voilaah/gamify-plugin` to add reputation point &amp; badges in your OctoberCMS.
+Use `voilaah/gamify-plugin` to add reputation points, badges, missions, and streaks in your OctoberCMS with automatic mission-badge linking.
 
 ### Installation
 
@@ -413,11 +413,152 @@ $user->resetPoint();
 
 You dont need to generate point class for this.
 
-### Mission
+## 🎯 🏆 Missions & Mission-Badge Linking
 
-Console command to refresh one user or all users mission achievements.
+The Gamify plugin now supports missions with automatic badge awarding when users complete mission levels. This creates a seamless progression system where completing mission levels automatically unlocks corresponding badges.
+
+### Mission Structure
+
+Missions are level-based achievements with:
+
+- **Multiple Levels**: Each mission can have several levels (1, 2, 3, 4, etc.)
+- **Progress Tracking**: Users progress through levels by completing actions
+- **Automatic Badge Awards**: Badges are automatically awarded when levels are completed
+- **Completion Badges**: Special badges for completing entire missions
+
+### Creating Mission Badges
+
+#### Automatic Generation
+
+Generate badges for all existing missions:
+
+```bash
+# Generate badges for all missions
+php artisan gamify:generate-mission-badges --all
+
+# Include completion badges (level 999)
+php artisan gamify:generate-mission-badges --all --completion
+
+# Generate badges for specific mission
+php artisan gamify:generate-mission-badges your_mission_code
 ```
+
+#### Manual Creation using MissionBadge Class
+
+You can also create custom mission badges by extending the `MissionBadge` class:
+
+```php
+<?php
+
+namespace App\Gamify\Badges;
+
+use Voilaah\Gamify\Classes\Badge\MissionBadge;
+
+class CourseExplorerLevel1 extends MissionBadge
+{
+    protected $name = 'Course Explorer - Beginner';
+    protected $description = 'Complete your first course exploration level';
+    protected $icon = 'course-explorer-level-1.svg';
+
+    public function getMissionCode(): string
+    {
+        return 'course_explorer';
+    }
+
+    public function getMissionLevel(): int
+    {
+        return 1;
+    }
+}
+```
+
+### How Mission-Badge Linking Works
+
+1. **Mission Progress**: When users perform actions that advance mission progress
+2. **Level Completion**: Mission system detects when a level is completed
+3. **Event Fired**: `gamify.mission.levelUp` event is triggered
+4. **Badge Awarded**: Corresponding badge is automatically awarded to the user
+5. **Context Tracked**: Badge award is recorded with mission context
+
+### Database Structure
+
+Mission badges have additional fields:
+
+- `mission_code`: Links badge to specific mission
+- `mission_level`: Specifies which mission level awards this badge
+- `is_mission_badge`: Identifies mission-linked badges
+
+User badge awards track:
+
+- `awarded_at_level`: Which mission level awarded the badge
+- `awarded_context`: How the badge was earned (`mission_level_completion`, `mission_completion`, `manual`)
+
+### Configuration Examples
+
+Mission badges inherit settings from the main mission but can be customized:
+
+```php
+// config/gamify.php additions
+'mission_icon_folder' => 'images/missions/',
+'mission_icon_extension' => '.svg',
+```
+
+### Badge Types
+
+The system now supports two types of badges:
+
+#### 1. Regular Badges (existing functionality)
+
+- Independent qualification logic
+- Manual awarding based on criteria
+- Traditional `qualifier($user)` method
+
+#### 2. Mission Badges (new functionality)
+
+- Linked to specific mission levels
+- Automatically awarded on mission progress
+- Inherit mission properties
+
+### Querying Mission Badges
+
+```php
+// Get all mission badges
+$missionBadges = Badge::missionBadges()->get();
+
+// Get badges for specific mission
+$courseBadges = Badge::forMission('course_explorer')->get();
+
+// Get badge for specific mission level
+$level1Badge = Badge::forMissionLevel('course_explorer', 1)->first();
+
+// Check if badge is mission-linked
+if ($badge->isMissionBadge()) {
+    echo "This badge is linked to mission: " . $badge->mission_code;
+}
+```
+
+### User Badge History
+
+Track how badges were earned:
+
+```php
+foreach($user->badges as $badge) {
+    $pivot = $badge->pivot;
+
+    if ($pivot->awarded_context === 'mission_level_completion') {
+        echo "Earned by completing level {$pivot->awarded_at_level}";
+    }
+}
+```
+
+### Console Commands
+
+```bash
+# Refresh user mission progress
 php artisan gamify:refresh-user-missions
+
+# Generate mission badges
+php artisan gamify:generate-mission-badges --all --completion
 ```
 
 ### Testing
@@ -440,3 +581,492 @@ If you discover any security related issues, please email sehanlim@outlook.com i
 ### License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+### display user badges, missions, etc...
+
+To display a user's badges and achievements in the UI, you can retrieve them using the existing gamify relationships and methods. Here are several approaches:
+
+1. 🏆 Get User Badges (Simple)
+
+```
+  // Get current user's badges
+  $user = Auth::user();
+  $badges = $user->badges; // Returns collection of earned badges
+
+  // Or for specific user
+  $user = User::find($userId);
+  $badges = $user->badges;
+
+  2. 📊 Get User Mission Progress & Achievements
+
+  $user = Auth::user();
+  $missionManager = app('gamify.missions');
+
+  // Get all active missions
+  $allMissions = $missionManager->allEnabled();
+
+  // Get user progress for each mission
+  $userAchievements = [];
+  foreach ($allMissions as $missionCode => $mission) {
+      $progress = $mission->getProgress($user);
+
+      $userAchievements[] = [
+          'mission' => [
+              'code' => $mission->getCode(),
+              'name' => $mission->getName(),
+              'description' => $mission->getDescription(),
+              'icon' => $mission->getIcon(),
+          ],
+          'progress' => $progress,
+          'levels' => $mission->getLevels(),
+      ];
+  }
+```
+
+3. 🎯 Complete User Dashboard Data
+
+```
+  function getUserDashboardData($userId)
+  {
+      $user = User::find($userId);
+
+      return [
+          // Basic user info
+          'user' => [
+              'name' => $user->name,
+              'reputation' => $user->getPoints(), // Total points/diamonds
+              'rank' => getUserRank($user), // From helpers.php
+          ],
+
+          // All earned badges
+          'badges' => $user->badges()->orderBy('created_at', 'desc')->get(),
+          'badgeCount' => $user->badges_count,
+
+          // Mission progress
+          'missions' => $this->getUserMissionProgress($user),
+
+          // Recent achievements (last 30 days)
+          'recentBadges' => $user->badges()
+              ->wherePivot('created_at', '>=', now()->subDays(30))
+              ->orderBy('pivot_created_at', 'desc')
+              ->get(),
+      ];
+  }
+
+  private function getUserMissionProgress($user)
+  {
+      $missionManager = app('gamify.missions');
+      $missions = [];
+
+      foreach ($missionManager->allEnabled() as $mission) {
+          $progress = $mission->getProgress($user);
+
+          $missions[] = [
+              'code' => $mission->getCode(),
+              'name' => $mission->getName(),
+              'description' => $mission->getDescription(),
+              'icon' => $mission->getIcon(),
+              'currentLevel' => $progress['currentLevel'],
+              'maxLevel' => $progress['maxLevel'],
+              'value' => $progress['value'],
+              'goal' => $progress['goal'],
+              'completed' => $progress['completed'],
+              'completionPercentage' => $progress['goal'] > 0
+                  ? round(($progress['value'] / $progress['goal']) * 100, 1)
+                  : 0,
+          ];
+      }
+
+      return $missions;
+  }
+```
+
+4. 🎨 Component Example (October CMS)
+
+Create a component to display user achievements:
+
+````
+  // components/UserAchievements.php
+  <?php
+
+  namespace Voilaah\Gamify\Components;
+
+  use Cms\Classes\ComponentBase;
+  use RainLab\User\Facades\Auth;
+
+  class UserAchievements extends ComponentBase
+  {
+      public function componentDetails()
+      {
+          return [
+              'name' => 'User Achievements',
+              'description' => 'Display user badges and mission progress'
+          ];
+      }
+
+      public function onRun()
+      {
+          $this->page['userAchievements'] = $this->getUserAchievements();
+      }
+
+      protected function getUserAchievements()
+      {
+          $user = Auth::getUser();
+          if (!$user) return null;
+
+          $missionManager = app('gamify.missions');
+
+          return [
+              'badges' => $user->badges()
+                  ->orderBy('voilaah_gamify_user_badges.created_at', 'desc')
+                  ->get(),
+
+              'missions' => $missionManager->allEnabled()->map(function($mission) use ($user) {
+                  return [
+                      'mission' => $mission,
+                      'progress' => $mission->getProgress($user)
+                  ];
+              }),
+
+              'stats' => [
+                  'totalBadges' => $user->badges()->count(),
+                  'totalPoints' => $user->getPoints(),
+                  'completedMissions' => $missionManager->allEnabled()
+                      ->filter(function($mission) use ($user) {
+                          return $mission->getProgress($user)['completed'];
+                      })->count(),
+              ]
+          ];
+      }
+  }```
+
+  5. 🚀 Frontend Display (Blade/Twig)
+````
+
+  <!-- User Dashboard -->
+  <div class="user-achievements">
+      <!-- Stats Overview -->
+      <div class="stats-row">
+          <div class="stat">
+              <h3>{{ userAchievements.stats.totalPoints }}</h3>
+              <p>Diamonds</p>
+          </div>
+          <div class="stat">
+              <h3>{{ userAchievements.stats.totalBadges }}</h3>
+              <p>Badges</p>
+          </div>
+          <div class="stat">
+              <h3>{{ userAchievements.stats.completedMissions }}</h3>
+              <p>Missions Complete</p>
+          </div>
+      </div>
+
+      <!-- Recent Badges -->
+      <div class="recent-badges">
+          <h2>Recent Badges</h2>
+          {% for badge in userAchievements.badges %}
+              <div class="badge-card">
+                  <img src="{{ badge.icon }}" alt="{{ badge.name }}">
+                  <h3>{{ badge.name }}</h3>
+                  <p>{{ badge.description }}</p>
+                  <small>Earned {{ badge.pivot.created_at|date('M j, Y') }}</small>
+              </div>
+          {% endfor %}
+      </div>
+
+      <!-- Mission Progress -->
+      <div class="missions-progress">
+          <h2>Mission Progress</h2>
+          {% for item in userAchievements.missions %}
+              {% set mission = item.mission %}
+              {% set progress = item.progress %}
+
+              <div class="mission-card {{ progress.completed ? 'completed' : '' }}">
+                  <div class="mission-info">
+                      <img src="{{ mission.getIcon() }}" alt="{{ mission.getName() }}">
+                      <div>
+                          <h3>{{ mission.getName() }}</h3>
+                          <p>{{ mission.getDescription() }}</p>
+                      </div>
+                  </div>
+
+                  <div class="progress-bar">
+                      <div class="progress-fill" style="width: {{ (progress.value / progress.goal * 100) }}%"></div>
+                  </div>
+
+                  <div class="progress-text">
+                      {% if progress.completed %}
+                          <span class="completed">✅ Complete!</span>
+                      {% else %}
+                          <span>{{ progress.value }}/{{ progress.goal }}</span>
+                          <span>Level {{ progress.currentLevel }}/{{ progress.maxLevel }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+          {% endfor %}
+      </div>
+
+  </div>
+```
+  6. ⚡ API Endpoints (for AJAX)
+
+```
+  // In your controller
+  public function getUserAchievements($userId = null)
+  {
+      $user = $userId ? User::find($userId) : Auth::user();
+
+      return response()->json([
+          'badges' => $user->badges,
+          'missions' => $this->getUserMissionProgress($user),
+          'reputation' => $user->getPoints(),
+          'rank' => getUserRank($user),
+      ]);
+
+}
+
+```
+
+Perfect! You need to show all available badges (both earned and not earned) to motivate users. Here's how to retrieve and display all mission badges with their states:
+
+1. 🎯 Get All Mission Badges with User Status
+
+```
+function getAllMissionBadgesWithStatus($user)
+{
+$missionManager = app('gamify.missions');
+$badgeModel = config('gamify.badge_model');
+$userBadgeIds = $user->badges()->pluck('voilaah_gamify_badges.id')->toArray();
+
+      $allBadges = [];
+
+      foreach ($missionManager->allEnabled() as $mission) {
+          $progress = $mission->getProgress($user);
+          $missionBadges = $this->getMissionBadges($mission, $userBadgeIds, $progress);
+
+          $allBadges[] = [
+              'mission' => [
+                  'code' => $mission->getCode(),
+                  'name' => $mission->getName(),
+                  'description' => $mission->getDescription(),
+                  'icon' => $mission->getIcon(),
+              ],
+              'progress' => $progress,
+              'badges' => $missionBadges,
+          ];
+      }
+
+      return $allBadges;
+
+}
+
+private function getMissionBadges($mission, $userBadgeIds, $progress)
+{
+$badgeModel = config('gamify.badge_model');
+$badges = [];
+
+      // Get level badges
+      foreach ($mission->getLevels() as $level => $config) {
+          $badge = $badgeModel::where('mission_code', $mission->getCode())
+              ->where('mission_level', $level)
+              ->where('is_mission_badge', true)
+              ->first();
+
+          if ($badge) {
+              $badges[] = [
+                  'badge' => $badge,
+                  'level' => $level,
+                  'type' => 'level',
+                  'status' => $this->getBadgeStatus($badge, $userBadgeIds, $progress, $level),
+                  'points' => $config['points'] ?? 0,
+                  'goal' => $config['goal'] ?? 0,
+              ];
+          }
+      }
+
+      // Get completion badge
+      $completionBadge = $badgeModel::where('mission_code', $mission->getCode())
+          ->where('mission_level', 999)
+          ->where('is_mission_badge', true)
+          ->first();
+
+      if ($completionBadge) {
+          $badges[] = [
+              'badge' => $completionBadge,
+              'level' => 999,
+              'type' => 'completion',
+              'status' => $this->getBadgeStatus($completionBadge, $userBadgeIds, $progress, 999),
+              'points' => $mission->completionPoints ?? 0,
+              'goal' => 'Complete all levels',
+          ];
+      }
+
+      return $badges;
+
+}
+
+private function getBadgeStatus($badge, $userBadgeIds, $progress, $level)
+  {
+      if (in_array($badge->id, $userBadgeIds)) {
+return 'earned';
+}
+
+      if ($level === 999) {
+          return $progress['completed'] ? 'earned' : 'locked';
+      }
+
+      if ($progress['currentLevel'] >= $level) {
+          return 'earned';
+      } elseif ($progress['currentLevel'] === $level && $progress['value'] > 0) {
+          return 'in_progress';
+      } else {
+          return 'locked';
+      }
+
+}
+```
+
+2. 🎨 Component for Badge Display
+
+```
+// components/AllMissionBadges.php
+
+  <?php
+
+  namespace Voilaah\Gamify\Components;
+
+  use Cms\Classes\ComponentBase;
+  use RainLab\User\Facades\Auth;
+
+  class AllMissionBadges extends ComponentBase
+  {
+      public function componentDetails()
+      {
+          return [
+              'name' => 'All Mission Badges',
+              'description' => 'Display all mission badges with earned/locked states'
+          ];
+      }
+
+      public function defineProperties()
+      {
+          return [
+              'showProgress' => [
+                  'title' => 'Show Progress Bars',
+                  'description' => 'Show progress bars for in-progress badges',
+                  'type' => 'checkbox',
+                  'default' => true
+              ],
+              'groupByMission' => [
+                  'title' => 'Group by Mission',
+                  'description' => 'Group badges by mission or show flat list',
+                  'type' => 'checkbox',
+                  'default' => true
+              ]
+          ];
+      }
+
+      public function onRun()
+      {
+          $user = Auth::getUser();
+          if (!$user) {
+              $this->page['allBadges'] = [];
+              return;
+          }
+
+          $this->page['allBadges'] = $this->getAllMissionBadgesWithStatus($user);
+          $this->page['showProgress'] = $this->property('showProgress');
+          $this->page['groupByMission'] = $this->property('groupByMission');
+      }
+
+      // Include the methods from above here...
+      protected function getAllMissionBadgesWithStatus($user) { /* ... */ }
+      private function getMissionBadges($mission, $userBadgeIds, $progress) { /* ... */ }
+      private function getBadgeStatus($badge, $userBadgeIds, $progress, $level) { /* ... */ }
+  }
+```
+
+3. 🎭 Frontend Display with States
+
+```
+  <!-- Badge Gallery -->
+  <div class="badge-gallery">
+      {% if groupByMission %}
+          <!-- Grouped by Mission -->
+          {% for missionData in allBadges %}
+                <div class="mission-section">
+                  <div class="mission-header">
+                      <img src="{{ missionData.mission.icon }}" alt="{{ missionData.mission.name }}" class="mission-icon">
+                      <div class="mission-info">
+                          <h2>{{ missionData.mission.name }}</h2>
+                          <p>{{ missionData.mission.description }}</p>
+                          <div class="mission-progress">
+                              {% if missionData.progress.completed %}
+                                  <span class="status completed">✅ Mission Complete!</span>
+                              {% else %}
+                                  <span class="status in-progress">
+                                      Level {{ missionData.progress.currentLevel }}/{{ missionData.progress.maxLevel }}
+                                      ({{ missionData.progress.value }}/{{ missionData.progress.goal }})
+                                  </span>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="mission-badges">
+                      {% for badgeData in missionData.badges %}
+                          <div class="badge-card {{ badgeData.status }}">
+                              <div class="badge-image-container">
+                                  <img src="{{ badgeData.badge.icon }}" alt="{{ badgeData.badge.name }}" class="badge-image">
+
+                                  <!-- Status Overlay -->
+                                  {% if badgeData.status == 'earned' %}
+                                      <div class="badge-overlay earned">✅</div>
+                                  {% elseif badgeData.status == 'locked' %}
+                                      <div class="badge-overlay locked">🔒</div>
+                                  {% elseif badgeData.status == 'in_progress' %}
+                                      <div class="badge-overlay progress">⏳</div>
+                                  {% endif %}
+                              </div>
+
+                              <div class="badge-info">
+                                  <h3>{{ badgeData.badge.name }}</h3>
+                                  <p>{{ badgeData.badge.description }}</p>
+
+                                  {% if badgeData.points > 0 %}
+                                      <div class="badge-points">{{ badgeData.points }} 💎</div>
+                                  {% endif %}
+
+                                  <!-- Progress Bar for In-Progress Badges -->
+                                  {% if badgeData.status == 'in_progress' and showProgress %}
+                                      {% set progressPercent = (missionData.progress.value / missionData.progress.goal * 100) %}
+                                      <div class="progress-bar">
+                                          <div class="progress-fill" style="width: {{ progressPercent }}%"></div>
+                                      </div>
+                                      <small>{{ missionData.progress.value }}/{{ missionData.progress.goal }}</small>
+                                  {% endif %}
+
+                                  <!-- Requirements for Locked Badges -->
+                                  {% if badgeData.status == 'locked' %}
+                                      <div class="requirements">
+                                          <small>{{ badgeData.goal }}</small>
+                                      </div>
+                                  {% endif %}
+                              </div>
+                          </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          {% endfor %}
+      {% else %}
+          <!-- Flat Badge List -->
+          <div class="badge-grid">
+              {% for missionData in allBadges %}
+                  {% for badgeData in missionData.badges %}
+                      <!-- Same badge card structure as above -->
+                  {% endfor %}
+              {% endfor %}
+          </div>
+      {% endif %}
+  </div>
+```

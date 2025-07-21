@@ -1,0 +1,57 @@
+<div id="user_missions max-w-full">
+    <div class="mb-4 h7">{{ 'Missions' | trans }}</div>
+    <div class="p-4 border rounded-lg lg:p-6 border-black-100">
+        <div class="mission-group-list">
+            {% for mission in missions %}
+                <div class="achievement-mission">
+                    <div class="flex">
+                        <div class="mr-4 shrink-0">
+                            <div
+                                class="flex flex-col items-center justify-center w-24 p-2 text-center rounded-2xl bg-black-100"
+                            >
+                                <img
+                                    src="{{ mission.icon | media }}"
+                                    alt="{{ mission.name }}"
+                                    width="64px"
+                                    height="64px"
+                                    class="mx-auto mb-1 leading-none sktext-xxs lg:sktext-xxs-lg"
+                                />
+                                <div class="text-[10px] font-bold leading-none text-wrap max-w-12">
+                                    {{ mission.getLevelLabel(mission.progress.currentLevel) | trans }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-col justify-between w-full h-auto max-w-[310px]">
+                            <div class="">
+                                <h4 class="mb-0 font-semibold sktext-sm lg:sktext-sm-lg">{{ mission.name }}</h4>
+                                <p class="mt-1 mb-0 sktext-xxs lg:sktext-xxs-lg">{{ mission.progress.description }}</p>
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="flex items-center justify-between w-full">
+                                    {% if mission.progress.currentLevel != 999 %}
+                                        <div class="progress">
+                                            {% set goal = mission.progress.goal %}
+                                            <div
+                                                class="progress-bar to-reveal"
+                                                style="--mission-progress: {{ goal != 0 ? min(100, (mission.progress.value / goal) * 100) : 0 }}%;"
+                                            ></div>
+                                        </div>
+                                        <div class="ml-2">
+                                            <span class="font-semibold leading-none sktext-xs lg:sktext-xs-lg"
+                                                >{{ mission.progress.value }}/{{ goal }}</span
+                                            >
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-center ml-4">
+                            <i class="ti ti-chevron-right sktext-xxl-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

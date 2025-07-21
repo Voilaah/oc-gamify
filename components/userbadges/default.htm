@@ -1,0 +1,189 @@
+<div id="user_badges max-w-full">
+    <div class="mb-4 h7">{{ 'Badges' | trans }}</div>
+    <div class="relative p-6 lg:p-6">
+        <!-- Stats Overview -->
+        {# <div class="flex items-center justify-between mission-stats">
+            <div class="stat-item">
+                <h3 class="mb-4 h7">{{ stats.completed_missions }}/{{ stats.total_missions }}</h3>
+                <p>Missions Complete</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="mb-4 h7">{{ stats.earned_current_badges }}/{{ stats.total_missions }}</h3>
+                <p>Current Badges Earned</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="mb-4 h7">{{ stats.average_progress }}%</h3>
+                <p>Average Progress</p>
+            </div>
+        </div> #}
+        <div class="badge-overflow-container">
+            <div class="badges-list">
+                {% for badge in currentBadges %}
+                    <div
+                        class="mission-badge-card {{ badge.status }} {{ badge.is_completed ? 'mission-complete' : '' }} {{ not badge.has_started ? 'not-started' : '' }}"
+                    >
+                        <!-- Badge Image & Status -->
+                        <div class="badge-header">
+                            <div class="badge-image-container">
+                                <img src="{{ badge.icon | media }}" alt="{{ badge.name }}" class="badge-image" />
+
+                                <!-- Status Indicator -->
+                                {% if not badge.has_started %}
+                                    <div class="hidden status-indicator not-started">Start</div>
+                                    {% elseif badge.is_completed %}
+                                    <div class="hidden status-indicator completed">🏆</div>
+                                    {% elseif badge.status == 'earned' %}
+                                    <div class="hidden status-indicator earned">✅</div>
+                                {% else %}
+                                    <div class="hidden status-indicator progress">
+                                        {{ badge.progress }}/{{ badge.goal }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Mission & Level Info -->
+                        <!-- Mission & Level Info -->
+                        <div class="badge-content">
+                            <h3 class="mission-name">{{ badge.mission_name }}</h3>
+                            <div class="current-level">
+                                {% if not badge.has_started %}
+                                    <span class="hidden level-badge not-started">Not Started</span>
+                                    {% elseif badge.is_completed %}
+                                    <span class="hidden level-badge completed">Mission Complete!</span>
+                                {% else %}
+                                    <span class="level-badge">{{ badge.level_label }}</span>
+                                    <span class="hidden level-badge"
+                                        >Level {{ badge.current_level }}/{{ badge.max_level }}</span
+                                    >
+                                {% endif %}
+                            </div>
+
+                            <p class="hidden level-description">{{ badge.description }}</p>
+
+                            {% if badge.points > 0 %}
+                                <div class="hidden badge-points">{{ badge.points }} 💎</div>
+                            {% endif %}
+
+                            <!-- Show total progress for context -->
+                            {% if badge.has_started and badge.total_progress > 0 %}
+                                <div class="hidden total-progress">
+                                    <small>Total completed: {{ badge.total_progress }}</small>
+                                </div>
+                            {% endif %}
+                            <div class="badge-actions"><i class="ti ti-arrow-right sktext-xl lg:sktext-xl-lg"></i></div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <!-- Progress Bar -->
+                        {% if showProgress and not badge.is_completed and badge.has_started %}
+                            <div class="hidden progress-section">
+                                {% if badge.status == 'earned' and badge.current_level < badge.max_level %}
+                                    <!-- Show that this level is complete, working toward next -->
+                                    <div class="hidden level-complete-indicator">
+                                        <span class="complete-check"
+                                            >✅ Level {{ badge.current_level - 1 }} Complete</span
+                                        >
+                                        <small>Working toward Level {{ badge.current_level }}</small>
+                                    </div>
+                                {% endif %}
+
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {{ badge.completion_percentage }}%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>{{ badge.progress }} / {{ badge.goal }}</span>
+                                    <span class="percentage">{{ badge.completion_percentage }}%</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Action Hint -->
+                        <div class="hidden action-hint">
+                            {% if not badge.has_started %}
+                                <small>🚀 Start this mission to begin earning rewards!</small>
+                                {% elseif badge.status == 'earned' and not badge.is_completed %}
+                                <small>✅ Badge earned! Keep going to next level</small>
+                                {% elseif badge.is_completed %}
+                                <small>🎉 Mission accomplished!</small>
+                            {% else %}
+                                <small>Continue learning to earn this badge</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# <div class="achievement-badge {{ badgeSelected ? 'achieved cursor-pointer' : '' }}">
+                            <div class="relative">
+                                <img
+                                    src="{{ badge.icon | media }}"
+                                    alt="{{ badge.name }}"
+                                    class="mx-auto"
+                                    {{ not(badgeSelected) ? 'style="opacity: .3;"' }}
+                                />
+                                {% if badgeSelected %}
+                                    <div class="absolute bottom-1 lg:right-5 right-2">
+                                        <img
+                                            class="size-6 img-badge-earned to-reveal"
+                                            src="{{ 'assets/images/badges/checked.png' | media }}"
+                                            alt="checked"
+                                        />
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="font-semibold text-center sktext-sm lg:sktext-sm-lg">{{ badge.name }}</div>
+                            <div class="text-center sktext-xxs lg:sktext-xxs-lg">{{ badge.description }}</div>
+                        </div> #}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% put scripts %}
+    <script>
+        // request permission on page load
+        /*  document.addEventListener('DOMContentLoaded', function () {
+            if (!Notification) {
+                alert('Desktop notifications not available in your browser. Try Chromium.');
+                return;
+            }
+
+            if (Notification.permission !== 'granted') Notification.requestPermission();
+        }); */
+
+        window.addEventListener('load', () => {
+            const badges = document.querySelectorAll('.achievement-badge.achieved');
+            badges.forEach((badge) => {
+                badge.addEventListener('click', function (evt) {
+                    showNotification('Congrats!', {
+                        icon: 'https://skillup.staging-voilaah.com/storage/app/media/assets/images/badges/first-course-enrolled-badge.png',
+                        body: 'You earned a 15 diamonds!',
+                        vibrate: true,
+                    });
+                    showNotification('Congrats!', {
+                        icon: 'https://skillup.staging-voilaah.com/storage/app/media/assets/images/badges/first-course-enrolled-badge.png',
+                        body: 'You earned a new badge!',
+                        vibrate: true,
+                    });
+                });
+            });
+        });
+
+        function showNotification(title, options) {
+            if (!('Notification' in window)) {
+                console.error('This browser does not support notifications.');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                new Notification(title, options);
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        new Notification(title, options);
+                    }
+                });
+            }
+        }
+    </script>
+{% endput %}
