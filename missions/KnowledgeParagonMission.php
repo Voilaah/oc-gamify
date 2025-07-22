@@ -36,19 +36,19 @@ class KnowledgeParagonMission extends BaseMission
             2 => [
                 'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.2.label',
                 'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.2.description',
-                'goal' => 2,
+                'goal' => 1, //2,
                 'points' => 15, // 15 diamonds
             ],
             3 => [
                 'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.3.label',
                 'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.3.description',
-                'goal' => 3,
+                'goal' => 1, //3,
                 'points' => 30, // 30 diamonds
             ],
             4 => [
                 'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.4.label',
                 'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.4.description',
-                'goal' => 5,
+                'goal' => 1, //5,
                 'points' => 50, // 50 diamonds
                 'time_constraint' => 30, // within 30 days of joining
             ],

@@ -58,7 +58,6 @@ class UserBadges extends ComponentBase
         $this->page['stats'] = $this->getMissionStats($currentBadges);
         $this->page['showProgress'] = $this->property('showProgress');
         $this->page['columnsDesktop'] = $this->property('columnsDesktop');
-
     }
 
     function getCurrentMissionBadges($user)
@@ -122,9 +121,9 @@ class UserBadges extends ComponentBase
             }
         }
 
-        // Sort by mission order
+        // Sort by mission order / current_level
         usort($currentBadges, function ($a, $b) {
-            return $a['sort_order'] <=> $b['sort_order'];
+            return $a['current_level'] <=> $b['current_level'];
         });
 
         return $currentBadges;
@@ -242,6 +241,4 @@ class UserBadges extends ComponentBase
         }
 
     } */
-
-
 }
