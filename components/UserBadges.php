@@ -72,6 +72,14 @@ class UserBadges extends ComponentBase
             $progress = $mission->getProgress($user);
             $currentLevel = $progress['currentLevel'];
 
+            // Calculate achieved level (current level - 1, with special handling)
+            $achievedLevel = $currentLevel > 1 ? $currentLevel - 1 : 0;
+
+            // If mission is completed (level 999), show completion badge
+            if ($progress['completed']) {
+                $achievedLevel = 999;
+            }
+
             // Fix: Use direct database query instead of protected method
             $userProgressRecord = \Voilaah\Gamify\Models\UserMissionProgress::where('user_id', $user->id)
                 ->where('mission_code', $mission->getCode())
@@ -87,30 +95,48 @@ class UserBadges extends ComponentBase
             $hasEarnedMissionBadge = !empty(array_intersect($userBadgeIds, $missionBadgeIds));
             $hasStarted = $totalValue > 0 || $hasEarnedMissionBadge || $progress['completed'];
 
-            // Find the badge for user's current level
+            // Find the badge for the achieved level (or current level if no achievement yet)
+            $displayLevel = $achievedLevel > 0 ? $achievedLevel : $currentLevel;
             $badge = $badgeModel::where('mission_code', $mission->getCode())
-                ->where('mission_level', $currentLevel)
+                ->where('mission_level', $displayLevel)
                 ->where('is_mission_badge', true)
                 ->first();
 
             if ($badge) {
-                $levelConfig = $mission->getLevels()[$currentLevel] ?? null;
+                $levelConfig = $mission->getLevels()[$displayLevel] ?? null;
+
+                // Determine status based on achieved level
+                $status = 'not_started';
+                $levelLabel = '-';
+
+                if ($achievedLevel > 0) {
+                    $status = 'earned';
+                    $levelLabel = $mission->getLevelLabel($achievedLevel);
+                } elseif ($hasStarted) {
+                    $status = 'in_progress';
+                    $levelLabel = '-';
+                } else {
+                    $status = 'not_started';
+                    $levelLabel = '-';
+                }
 
                 $currentBadges[] = [
                     'badge_id' => $badge->id,
-                    'name' => $mission->getName() . ' - ' . $mission->getLevelLabel($currentLevel),
-                    'description' => $mission->getDescriptionForLevel($currentLevel),
+                    'name' => $mission->getName() . ' - ' . ($achievedLevel > 0 ? $mission->getLevelLabel($achievedLevel) : 'Not Yet Achieved'),
+                    'description' => $achievedLevel > 0 ? $mission->getDescriptionForLevel($achievedLevel) : 'Keep progressing to earn your first badge!',
                     'icon' => $mission->getIcon(),
                     'mission_name' => $mission->getName(),
                     'mission_code' => $mission->getCode(),
                     'current_level' => $currentLevel,
+                    'achieved_level' => $achievedLevel,
+                    'display_level' => $displayLevel,
                     'max_level' => $mission->getMaxLevel(),
-                    'level_label' => $mission->getLevelLabel($currentLevel),
+                    'level_label' => $levelLabel,
                     'progress' => $progress['value'],
                     'goal' => $progress['goal'],
                     'total_progress' => $totalValue,
                     'points' => $levelConfig['points'] ?? 0,
-                    'status' => in_array($badge->id, $userBadgeIds) ? 'earned' : 'in_progress',
+                    'status' => $status,
                     'completion_percentage' => $progress['goal'] > 0
                         ? round(($progress['value'] / $progress['goal']) * 100, 1)
                         : 0,
@@ -121,9 +147,24 @@ class UserBadges extends ComponentBase
             }
         }
 
-        // Sort by mission order / current_level
+        // Sort by non-grayed badges first (has_started OR achieved_level > 0)
         usort($currentBadges, function ($a, $b) {
-            return $a['current_level'] <=> $b['current_level'];
+            // A badge is NOT grayed if: has_started OR achieved_level > 0
+            $aIsNotGrayed = ($a['has_started'] || $a['achieved_level'] > 0) ? 1 : 0;
+            $bIsNotGrayed = ($b['has_started'] || $b['achieved_level'] > 0) ? 1 : 0;
+
+            // First, prioritize non-grayed badges
+            if ($aIsNotGrayed !== $bIsNotGrayed) {
+                return $bIsNotGrayed <=> $aIsNotGrayed; // Show non-grayed first
+            }
+
+            // Among non-grayed badges, sort by achieved level (highest first)
+            if ($a['achieved_level'] !== $b['achieved_level']) {
+                return $b['achieved_level'] <=> $a['achieved_level']; // Highest level first
+            }
+
+            // Finally, sort by mission order as fallback
+            return $a['sort_order'] <=> $b['sort_order'];
         });
 
         return $currentBadges;
@@ -144,6 +185,132 @@ class UserBadges extends ComponentBase
             'average_progress' => count($startedMissions) > 0
                 ? round(array_sum(array_map(fn($b) => $b['has_started'] ? $b['completion_percentage'] : 0, $badges)) / count($startedMissions), 1)
                 : 0
+        ];
+    }
+
+    public function onFetchMission()
+    {
+        $missionCode = post('id');
+        $user = Auth::getUser();
+        
+        if (!$user || !$missionCode) {
+            return [
+                'error' => 'Invalid request'
+            ];
+        }
+
+        // Get the mission directly by mission code
+        $missionManager = app('gamify.missions');
+        $mission = $missionManager->find($missionCode);
+        
+        if (!$mission) {
+            return [
+                'error' => 'Mission not found'
+            ];
+        }
+
+        // Get user progress for this mission
+        $progress = $mission->getProgress($user);
+        $currentLevel = $progress['currentLevel'];
+        $userBadgeIds = $user->badges()->pluck('voilaah_gamify_badges.id')->toArray();
+        
+        // Calculate achieved level (same logic as in badge list)
+        $achievedLevel = $currentLevel > 1 ? $currentLevel - 1 : 0;
+        
+        // If mission is completed (level 999), show completion badge
+        if ($progress['completed']) {
+            $achievedLevel = 999;
+        }
+        
+        // Get user progress record for total values
+        $userProgressRecord = \Voilaah\Gamify\Models\UserMissionProgress::where('user_id', $user->id)
+            ->where('mission_code', $mission->getCode())
+            ->first();
+
+        $totalValue = $userProgressRecord ? $userProgressRecord->total_value ?? 0 : 0;
+
+        // Build mission data with all levels
+        $missionData = [
+            'mission_code' => $mission->getCode(),
+            'mission_name' => $mission->getName(),
+            'mission_description' => $mission->getDescription(),
+            'mission_icon' => $mission->getIcon(),
+            'current_level' => $currentLevel,
+            'achieved_level' => $achievedLevel,
+            'is_completed' => $progress['completed'],
+            'total_progress' => $totalValue,
+            'levels' => []
+        ];
+
+        // Get all level badges for this mission
+        $badgeModel = config('gamify.badge_model');
+        $levelBadges = $badgeModel::where('mission_code', $mission->getCode())
+            ->where('is_mission_badge', true)
+            ->orderBy('mission_level')
+            ->get()
+            ->keyBy('mission_level');
+
+        // Build level data
+        foreach ($mission->getLevels() as $level => $config) {
+            $levelBadge = $levelBadges->get($level);
+            $hasEarnedLevel = $levelBadge && in_array($levelBadge->id, $userBadgeIds);
+            
+            // Calculate progress for this level
+            $levelProgress = 0;
+            $levelStatus = 'locked';
+            
+            if ($level < $progress['currentLevel']) {
+                // Past levels are completed
+                $levelProgress = 100;
+                $levelStatus = 'completed';
+            } elseif ($level == $progress['currentLevel']) {
+                // Current level shows actual progress
+                $levelProgress = $progress['goal'] > 0 
+                    ? round(($progress['value'] / $progress['goal']) * 100, 1)
+                    : 0;
+                $levelStatus = $hasEarnedLevel ? 'completed' : 'in_progress';
+            } elseif ($level == $progress['currentLevel'] + 1) {
+                // Next level is available but not started
+                $levelStatus = 'available';
+            }
+
+            $missionData['levels'][] = [
+                'level' => $level,
+                'label' => $mission->getLevelLabel($level),
+                'description' => $mission->getDescriptionForLevel($level),
+                'goal' => $config['goal'] ?? 0,
+                'points' => $config['points'] ?? 0,
+                'icon' => $mission->getIcon(), // You might want level-specific icons
+                'progress' => $levelProgress,
+                'status' => $levelStatus,
+                'is_earned' => $hasEarnedLevel,
+                'badge_id' => $levelBadge ? $levelBadge->id : null,
+            ];
+        }
+
+        // Add completion level if exists
+        $completionBadge = $levelBadges->get(999);
+        if ($completionBadge) {
+            $hasEarnedCompletion = in_array($completionBadge->id, $userBadgeIds);
+            
+            $missionData['levels'][] = [
+                'level' => 999,
+                'label' => 'Mission Complete',
+                'description' => 'You have mastered this mission!',
+                'goal' => 0,
+                'points' => $mission->completionPoints ?? 0,
+                'icon' => $mission->getIcon(),
+                'progress' => $progress['completed'] ? 100 : 0,
+                'status' => $progress['completed'] ? 'completed' : 'locked',
+                'is_earned' => $hasEarnedCompletion,
+                'badge_id' => $completionBadge->id,
+            ];
+        }
+
+        $this->page['missionData'] = $missionData;
+        
+        return [
+            'missionData' => $missionData
         ];
     }
 

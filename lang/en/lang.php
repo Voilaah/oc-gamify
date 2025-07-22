@@ -6,7 +6,7 @@ return [
         'description' => 'Gamification system for learning platforms',
     ],
     'missions' => [
-        'course_explorer' => [
+        'voilaah_test' => [
             'name' => 'Course Explorer',
             'description' => 'Discover the world of learning by enrolling in courses',
             'completion_label' => 'Congratulations! You are now a true Course Explorer!',
@@ -16,16 +16,16 @@ return [
                     'description' => 'Enroll in your first course',
                 ],
                 2 => [
-                    'label' => 'Knowledge Seeker', 
-                    'description' => 'Enroll in 2 courses',
+                    'label' => 'Knowledge Seeker',
+                    'description' => 'Enroll in 1 more course',
                 ],
                 3 => [
                     'label' => 'Dedicated Student',
-                    'description' => 'Enroll in 3 courses',
+                    'description' => 'Enroll in 1 more course',
                 ],
                 4 => [
                     'label' => 'Course Explorer',
-                    'description' => 'Enroll in 4 courses and master the art of learning',
+                    'description' => 'Enroll in 1 more course and master the art of learning',
                 ],
             ],
         ],

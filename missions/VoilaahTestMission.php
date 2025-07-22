@@ -6,11 +6,11 @@ use RainLab\User\Models\User;
 use Voilaah\Gamify\Classes\Mission\BaseMission;
 use Carbon\Carbon;
 
-class KnowledgeParagonMission extends BaseMission
+class VoilaahTestMission extends BaseMission
 {
-    protected $nameKey = 'voilaah.gamify::lang.missions.knowledge_paragon.name';
-    protected $descriptionKey = 'voilaah.gamify::lang.missions.knowledge_paragon.description';
-    protected $completionLabelKey = 'voilaah.gamify::lang.missions.knowledge_paragon.completion_label';
+    protected $nameKey = 'voilaah.gamify::lang.missions.voilaah_test.name';
+    protected $descriptionKey = 'voilaah.gamify::lang.missions.voilaah_test.description';
+    protected $completionLabelKey = 'voilaah.gamify::lang.missions.voilaah_test.completion_label';
     protected $icon = 'assets/images/missions/knowledge-paragon.svg';
     protected $sort_order = 1;
     protected $completionPoints = 100; // Bonus points for completing all levels
@@ -28,27 +28,27 @@ class KnowledgeParagonMission extends BaseMission
     {
         return [
             1 => [
-                'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.1.label',
-                'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.1.description',
+                'labelKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.1.label',
+                'descriptionKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.1.description',
                 'goal' => 1,
                 'points' => 5, // 5 diamonds
             ],
             2 => [
-                'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.2.label',
-                'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.2.description',
-                'goal' => 2,
+                'labelKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.2.label',
+                'descriptionKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.2.description',
+                'goal' => 1,
                 'points' => 15, // 15 diamonds
             ],
             3 => [
-                'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.3.label',
-                'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.3.description',
-                'goal' => 3,
+                'labelKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.3.label',
+                'descriptionKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.3.description',
+                'goal' => 1,
                 'points' => 30, // 30 diamonds
             ],
             4 => [
-                'labelKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.4.label',
-                'descriptionKey' => 'voilaah.gamify::lang.missions.knowledge_paragon.levels.4.description',
-                'goal' => 5,
+                'labelKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.4.label',
+                'descriptionKey' => 'voilaah.gamify::lang.missions.voilaah_test.levels.4.description',
+                'goal' => 1,
                 'points' => 50, // 50 diamonds
                 'time_constraint' => 30, // within 30 days of joining
             ],
@@ -63,7 +63,7 @@ class KnowledgeParagonMission extends BaseMission
         // This should return the actual number of courses the user has completed
         // Adjust based on your LMS course completion system
 
-        return $user->courses_completed()->count();
+        return $user->courses_enrolled()->count();
 
         // For demo purposes, we'll use mission progress
         $progress = $this->userMissionProgress($user);
@@ -80,7 +80,7 @@ class KnowledgeParagonMission extends BaseMission
     {
         return [
             // Listen for course completion events
-            'skillup.course.completed' => function ($course, $user) {
+            'skillup.course.enrolled' => function ($course, $user) {
                 return [
                     'user' => $user,
                     'course' => $course

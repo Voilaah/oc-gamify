@@ -37,6 +37,7 @@ class UserMissions extends ComponentBase
         if ($user = Auth::getUser()) {
             $userMissions = $this->loadUserMissions($user);
             $this->page["missions"] = $userMissions['missions'];
+            // trace_log($this->page["missions"]);
             /* $this->page["missionProgress"] = $userMissions['userMissionProgress']; */
         }
     }

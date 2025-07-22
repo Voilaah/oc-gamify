@@ -1,0 +1,224 @@
+<!-- Mission Info Modal -->
+<div class="modal-content">
+    {# <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div> #}
+    <div class="modal-header">
+        <h5 class="sr-only modal-title">{{ 'Mission Details' | trans }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="mission-modal-content">
+            <!-- Mission Header -->
+            <div class="mb-6 mission-header">
+                <div class="flex flex-col items-center gap-4 mb-4">
+                    <div class="mission-image-container">
+                        <img
+                            src="{{ missionData.mission_icon | media }}"
+                            alt="{{ missionData.mission_name }}"
+                            class="object-contain w-full h-full"
+                        />
+                    </div>
+                    <div class="flex-1 mission-info">
+                        <h2 class="mb-2 font-bold tracking-normal sktext-md lg:sktext-md-lg">
+                            {{ missionData.mission_name }}
+                        </h2>
+                        <p class="text-text-blue-black sktext-sm lg:sktext-sm-lg">
+                            {{ missionData.mission_description }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Overall Progress -->
+                <div class="hidden p-4 rounded-lg overall-progress bg-gray-50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium">Overall Progress</span>
+                        <span class="text-sm text-gray-600"
+                            >Level
+                            {{ missionData.achieved_level == 999 ? 'Complete' : (missionData.achieved_level == 0 ? '-' : missionData.achieved_level) }}/{{ missionData.levels|length }}</span
+                        >
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full progress-bar">
+                        {% set totalLevels = missionData.levels|length - 1 %}
+                        {% set overallProgress = missionData.achieved_level == 999 ? 100 : (missionData.achieved_level > 0 ? (missionData.achieved_level / totalLevels * 100) : 0) %}
+                        <div
+                            class="h-full transition-all duration-300 bg-blue-500 rounded-full progress-fill"
+                            style="width: {{ overallProgress }}%"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Levels -->
+            <div class="space-y-4 mission-levels">
+                <h3 class="mb-4 font-semibold tracking-normal sktext-md lg:sktext-md-lg">Mission Levels</h3>
+
+                {% for level in missionData.levels %}
+                    <div
+                        class="level-card level-card_{{ level.status }} {{ level.status == 'completed' ? 'border-green-200 bg-green-50' : '' }} {{ level.status == 'in_progress' ? 'border-blue-200 bg-blue-50' : '' }} {{ level.status == 'locked' ? '_border-gray-200 _opacity-60' : '' }}"
+                    >
+                        <div class="flex items-center gap-4">
+                            <!-- Level Icon -->
+                            <div class="relative flex-shrink-0 w-12 h-12 level-icon">
+                                <img
+                                    src="{{ level.icon | media }}"
+                                    alt="{{ level.label }}"
+                                    class="w-full h-full object-contain {{ level.status == 'locked' ? 'grayscale opacity-50' : '' }}"
+                                />
+
+                                <!-- Level Status Indicator -->
+                                {% if level.status == 'completed' %}
+                                    <div
+                                        class="absolute flex items-center justify-center w-6 h-6 bg-green-500 rounded-full -top-1 -right-1"
+                                    >
+                                        <i class="text-xs text-white ti ti-check"></i>
+                                    </div>
+                                    {% elseif level.status == 'in_progress' %}
+                                    <div
+                                        class="absolute flex items-center justify-center w-6 h-6 bg-blue-500 rounded-full -top-1 -right-1"
+                                    >
+                                        <i class="text-xs text-white ti ti-clock"></i>
+                                    </div>
+                                    {% elseif level.status == 'locked' %}
+                                    <div
+                                        class="absolute flex items-center justify-center w-6 h-6 bg-gray-400 rounded-full -top-1 -right-1"
+                                    >
+                                        <i class="text-xs text-white ti ti-lock"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Level Info -->
+                            <div class="flex-1 level-info">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-x-2">
+                                        <div class="flex items-center gap-x-1">
+                                            {% for i in 1..level.level %}
+                                                <img
+                                                    src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
+                                                    alt="Level {{ badge.achieved_level }}"
+                                                    class="w-[10px] h-[14px]"
+                                                />
+                                            {% endfor %}
+                                        </div>
+                                        <h4 class="h7 {{ level.status == 'locked' ? 'text-gray-400' : '' }}">
+                                            {{ level.label }}
+                                            {# {% if level.level == 999 %}
+                                                <span
+                                                    class="px-2 py-1 ml-2 text-xs text-yellow-800 bg-yellow-100 rounded-full"
+                                                    >Completion</span
+                                                >
+                                            {% else %}
+                                                <span class="px-2 py-1 ml-2 text-xs text-gray-600 bg-gray-100 rounded-full"
+                                                    >Level {{ level.level }}</span
+                                                >
+                                            {% endif %} #}
+                                        </h4>
+                                    </div>
+
+                                    <!-- Points -->
+                                    {% if level.points > 0 %}
+                                        <span class="text-sm font-medium text-yellow-600">{{ level.points }} 💎</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Level Description -->
+                                <p
+                                    class="text-sm text-gray-600 mb-3 {{ level.status == 'locked' ? 'text-gray-400' : '' }}"
+                                >
+                                    {{ level.description }}
+                                </p>
+
+                                <!-- Requirements -->
+                                {% if level.goal > 0 %}
+                                    <p class="hidden mb-2 text-xs text-gray-500">
+                                        <strong>Requirement:</strong> Complete {{ level.goal }}
+                                        {{ level.level == 1 ? 'action' : 'actions' }}
+                                    </p>
+                                {% endif %}
+
+                                <!-- Progress Bar -->
+                                {% if level.status != 'locked' %}
+                                    <div class="level-progress">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-xs text-gray-600">Progress</span>
+                                            <span class="text-xs font-medium">
+                                                {% if level.status == 'completed' %}
+                                                    Completed ✅
+                                                {% else %}
+                                                    {{ level.progress }}%
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="h-4 bg-gray-200 border rounded-full border-brand-dark progress-bar">
+                                            <div
+                                                class="progress-fill {{ level.status == 'completed' ? 'bg-brand-dark' : 'bg-brand-dark' }} h-full rounded-full transition-all duration-300"
+                                                style="width: {{ level.progress }}%"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Mission Stats Footer -->
+            <div class="hidden pt-4 mt-6 border-t border-gray-200 mission-stats">
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="stat-item">
+                        <div class="text-lg font-bold text-blue-600">
+                            {{ missionData.levels|filter(l => l.status == 'completed')|length }}
+                        </div>
+                        <div class="text-xs text-gray-600">Levels Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="text-lg font-bold text-yellow-600">
+                            {{ missionData.levels|reduce((carry, l) => carry + l.points, 0) }}
+                        </div>
+                        <div class="text-xs text-gray-600">Total Points Available</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="text-lg font-bold text-green-600">{{ missionData.total_progress }}</div>
+                        <div class="text-xs text-gray-600">Total Progress</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        {# <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> #}
+    </div>
+</div>
+
+<style>
+    .mission-modal-content {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .level-card {
+        transition: all 0.2s ease;
+    }
+
+    .level-card:hover:not(.opacity-60) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-fill {
+        transition: width 0.8s ease-in-out;
+    }
+
+    .mission-icon img,
+    .level-icon img {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .modal-body {
+        padding: 0;
+    }
+</style>

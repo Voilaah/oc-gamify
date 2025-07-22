@@ -24,8 +24,31 @@
                     >
                         <!-- Badge Image & Status -->
                         <div class="badge-header">
-                            <div class="badge-image-container">
-                                <img src="{{ badge.icon | media }}" alt="{{ badge.name }}" class="badge-image" />
+                            <div class="relative badge-image-container">
+                                <img
+                                    src="{{ badge.icon | media }}"
+                                    alt="{{ badge.name }}"
+                                    class="badge-image {{ (not badge.has_started and badge.achieved_level == 0) ? 'grayscale opacity-50' : '' }}"
+                                />
+
+                                <!-- Fire Icon based on achieved level -->
+                                {% if badge.achieved_level > 0 %}
+                                    <div
+                                        class="absolute flex items-center justify-center px-2 py-1 transform -translate-x-1/2 bg-black-800 rounded-[20px] -bottom-4 left-1/2"
+                                    >
+                                        <img
+                                            src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
+                                            alt="Level {{ badge.achieved_level }}"
+                                            class="w-[10px] h-[14px]"
+                                        />
+                                        {% if badge.achieved_level > 1 %}
+                                            <span
+                                                class="absolute flex items-center justify-center w-4 h-4 text-xs font-bold text-white transform -translate-x-1/2 bg-red-500 rounded-full -bottom-1 left-1/2"
+                                                >{{ badge.achieved_level }}</span
+                                            >
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
 
                                 <!-- Status Indicator -->
                                 {% if not badge.has_started %}
@@ -46,13 +69,13 @@
                         <div class="badge-content">
                             <h3 class="mission-name">{{ badge.mission_name }}</h3>
                             <div class="current-level">
+                                <span class="level-badge">{{ badge.level_label }}</span>
                                 {% if not badge.has_started %}
                                     <span class="hidden level-badge not-started">Not Started</span>
                                     {% elseif badge.is_completed %}
                                     <span class="hidden level-badge completed">Mission Complete!</span>
                                 {% else %}
-                                    <span class="level-badge">{{ badge.level_label ? badge.level_label : '-' }}</span>
-                                    <span class="level-badge"
+                                    <span class="hidden level-badge"
                                         >Level {{ badge.current_level }}/{{ badge.max_level }}</span
                                     >
                                 {% endif %}
@@ -66,17 +89,30 @@
 
                             <!-- Show total progress for context -->
                             {% if badge.has_started and badge.total_progress > 0 %}
-                                <div class=" total-progress">
+                                <div class="hidden total-progress">
                                     <small>Total completed: {{ badge.total_progress }}</small>
                                 </div>
                             {% endif %}
-                            <div class="badge-actions"><i class="ti ti-arrow-right sktext-xl lg:sktext-xl-lg"></i></div>
+                            <div class="relative badge-actions">
+                                <i class="ti ti-arrow-right sktext-xl lg:sktext-xl-lg"></i>
+                                <a
+                                    href="javascript:;"
+                                    id="popup-complete-course-btn"
+                                    class="absolute inset-0"
+                                    data-request="userBadges::onFetchMission"
+                                    data-request-data="{id: '{{ badge.mission_code }}'}"
+                                    data-request-update="{ 'userBadges::modal-mission-info': '#siteModalContent' }"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#siteModal"
+                                >
+                                </a>
+                            </div>
                         </div>
 
                         <!-- Progress Bar -->
                         <!-- Progress Bar -->
                         {% if showProgress and not badge.is_completed and badge.has_started %}
-                            <div class=" progress-section">
+                            <div class="hidden progress-section">
                                 {% if badge.status == 'earned' and badge.current_level < badge.max_level %}
                                     <!-- Show that this level is complete, working toward next -->
                                     <div class=" level-complete-indicator">

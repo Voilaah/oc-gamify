@@ -3,7 +3,7 @@
     <div class="p-4 border rounded-lg lg:p-6 border-black-100">
         <div class="mission-group-list">
             {% for mission in missions %}
-                <div class="achievement-mission">
+                <div class="relative achievement-mission">
                     <div class="flex">
                         <div class="mr-4 shrink-0">
                             <div
@@ -48,6 +48,17 @@
                         </div>
                         <div class="flex items-center justify-center ml-4">
                             <i class="ti ti-chevron-right sktext-xxl-lg"></i>
+                            <a
+                                href="javascript:;"
+                                id="popup-complete-course-btn"
+                                class="absolute inset-0"
+                                data-request="userBadges::onFetchMission"
+                                data-request-data="{id: '{{ mission.progress.data.code }}'}"
+                                data-request-update="{ 'userBadges::modal-mission-info': '#siteModalContent' }"
+                                data-bs-toggle="modal"
+                                data-bs-target="#siteModal"
+                            >
+                            </a>
                         </div>
                     </div>
                 </div>
