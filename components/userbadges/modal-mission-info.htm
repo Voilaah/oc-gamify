@@ -65,7 +65,7 @@
                                 <img
                                     src="{{ level.icon | media }}"
                                     alt="{{ level.label }}"
-                                    class="w-full h-full object-contain {{ level.status == 'locked' ? 'grayscale opacity-50' : '' }}"
+                                    class="w-full h-full object-contain {{ level.status == 'locked' ? '_grayscale _opacity-50' : '' }}"
                                 />
 
                                 <!-- Level Status Indicator -->
@@ -141,25 +141,25 @@
 
                                 <!-- Progress Bar -->
                                 {% if level.status != 'locked' %}
-                                    <div class="level-progress">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <span class="text-xs text-gray-600">Progress</span>
-                                            <span class="text-xs font-medium">
-                                                {% if level.status == 'completed' %}
-                                                    Completed ✅
-                                                {% else %}
-                                                    {{ level.progress }}%
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                        <div class="h-4 bg-gray-200 border rounded-full border-brand-dark progress-bar">
-                                            <div
-                                                class="progress-fill {{ level.status == 'completed' ? 'bg-brand-dark' : 'bg-brand-dark' }} h-full rounded-full transition-all duration-300"
-                                                style="width: {{ level.progress }}%"
-                                            ></div>
-                                        </div>
-                                    </div>
                                 {% endif %}
+                                <div class="level-progress">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs text-gray-600">Progress</span>
+                                        <span class="text-xs font-medium">
+                                            {% if level.status == 'completed' %}
+                                                Completed ✅
+                                            {% else %}
+                                                {{ level.progress }}%
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="h-4 bg-gray-200 border rounded-full border-brand-dark progress-bar">
+                                        <div
+                                            class="progress-fill {{ level.status == 'completed' ? 'bg-brand-dark' : 'bg-brand-dark' }} h-full rounded-full transition-all duration-300"
+                                            style="width: {{ level.progress }}%"
+                                        ></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,14 +189,14 @@
             </div>
         </div>
     </div>
-    <div class="modal-footer">
-        {# <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> #}
-    </div>
+    {# <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div> #}
 </div>
 
 <style>
     .mission-modal-content {
-        max-height: 70vh;
+        max-height: 95vh;
         overflow-y: auto;
     }
 

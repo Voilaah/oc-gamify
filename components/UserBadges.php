@@ -52,6 +52,8 @@ class UserBadges extends ComponentBase
             return;
         }
 
+        $this->addJs('/plugins/voilaah/gamify/assets/js/drag.js');
+
         $currentBadges = $this->getCurrentMissionBadges($user);
 
         $this->page['currentBadges'] = $currentBadges;
@@ -192,7 +194,7 @@ class UserBadges extends ComponentBase
     {
         $missionCode = post('id');
         $user = Auth::getUser();
-        
+
         if (!$user || !$missionCode) {
             return [
                 'error' => 'Invalid request'
@@ -202,7 +204,7 @@ class UserBadges extends ComponentBase
         // Get the mission directly by mission code
         $missionManager = app('gamify.missions');
         $mission = $missionManager->find($missionCode);
-        
+
         if (!$mission) {
             return [
                 'error' => 'Mission not found'
@@ -213,15 +215,15 @@ class UserBadges extends ComponentBase
         $progress = $mission->getProgress($user);
         $currentLevel = $progress['currentLevel'];
         $userBadgeIds = $user->badges()->pluck('voilaah_gamify_badges.id')->toArray();
-        
+
         // Calculate achieved level (same logic as in badge list)
         $achievedLevel = $currentLevel > 1 ? $currentLevel - 1 : 0;
-        
+
         // If mission is completed (level 999), show completion badge
         if ($progress['completed']) {
             $achievedLevel = 999;
         }
-        
+
         // Get user progress record for total values
         $userProgressRecord = \Voilaah\Gamify\Models\UserMissionProgress::where('user_id', $user->id)
             ->where('mission_code', $mission->getCode())
@@ -254,18 +256,18 @@ class UserBadges extends ComponentBase
         foreach ($mission->getLevels() as $level => $config) {
             $levelBadge = $levelBadges->get($level);
             $hasEarnedLevel = $levelBadge && in_array($levelBadge->id, $userBadgeIds);
-            
+
             // Calculate progress for this level
             $levelProgress = 0;
             $levelStatus = 'locked';
-            
+
             if ($level < $progress['currentLevel']) {
                 // Past levels are completed
                 $levelProgress = 100;
                 $levelStatus = 'completed';
             } elseif ($level == $progress['currentLevel']) {
                 // Current level shows actual progress
-                $levelProgress = $progress['goal'] > 0 
+                $levelProgress = $progress['goal'] > 0
                     ? round(($progress['value'] / $progress['goal']) * 100, 1)
                     : 0;
                 $levelStatus = $hasEarnedLevel ? 'completed' : 'in_progress';
@@ -292,7 +294,7 @@ class UserBadges extends ComponentBase
         $completionBadge = $levelBadges->get(999);
         if ($completionBadge) {
             $hasEarnedCompletion = in_array($completionBadge->id, $userBadgeIds);
-            
+
             $missionData['levels'][] = [
                 'level' => 999,
                 'label' => 'Mission Complete',
@@ -308,7 +310,7 @@ class UserBadges extends ComponentBase
         }
 
         $this->page['missionData'] = $missionData;
-        
+
         return [
             'missionData' => $missionData
         ];

@@ -1,6 +1,6 @@
 <div id="user_badges max-w-full">
-    <div class="mb-4 h7">{{ 'Badges' | trans }}</div>
-    <div class="relative p-6 lg:p-6">
+    <div class="mb-0 h7">{{ 'Badges' | trans }}</div>
+    <div class="relative pb-6 lg:pb-6">
         <!-- Stats Overview -->
         {# <div class="flex items-center justify-between mission-stats">
             <div class="stat-item">
@@ -17,6 +17,7 @@
             </div>
         </div> #}
         <div class="badge-overflow-container">
+            {# <div class="drag-hint">👆 Drag to scroll</div> #}
             <div class="badges-list">
                 {% for badge in currentBadges %}
                     <div
@@ -28,7 +29,7 @@
                                 <img
                                     src="{{ badge.icon | media }}"
                                     alt="{{ badge.name }}"
-                                    class="badge-image {{ (not badge.has_started and badge.achieved_level == 0) ? 'grayscale opacity-50' : '' }}"
+                                    class="select-none pointer-events-none badge-image {{ (not badge.has_started and badge.achieved_level == 0) ? 'grayscale opacity-50' : '' }}"
                                 />
 
                                 <!-- Fire Icon based on achieved level -->
@@ -170,6 +171,7 @@
                         </div> #}
                 {% endfor %}
             </div>
+            <div class="drag-indicator"></div>
         </div>
     </div>
 </div>
