@@ -44,7 +44,7 @@ class NotifyBadges
             $badgesData[] = [
                 'name' => $badge->name,
                 'description' => $badge->description,
-                'type' => Notifications::TYPE_BADGE,
+                // 'type' => Notifications::TYPE_BADGE,
                 'icon' => $badge->icon,
             ];
         }

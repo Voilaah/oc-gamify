@@ -94,7 +94,7 @@ class CourseExplorerMissionTest extends BaseMission
      */
     public function isEnabled(): bool
     {
-        return true;
+        return false;
     }
 
     /**
