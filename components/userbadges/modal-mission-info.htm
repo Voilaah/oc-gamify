@@ -22,11 +22,11 @@
                         />
                     </div>
                     <div class="flex-1 mission-info">
-                        <h2 class="mb-2 font-bold tracking-normal sktext-md lg:sktext-md-lg">
-                            {{ missionData.mission_name }}
-                        </h2>
-                        <p class="text-text-blue-black sktext-sm lg:sktext-sm-lg">
-                            {{ missionData.mission_description }}
+                        <h2 class="mb-2 h5">{{ missionData.mission_name }}</h2>
+                        <p class="sktext-lg lg:sktext-lg-lg">{{ missionData.level_label }}</p>
+                        <p class="font-semibold text-text-blue-black sktext-sm lg:sktext-sm-lg">
+                            {# {{ missionData.mission_description }} #}
+                            {{ "Climb the ranks, ignite your skills, and earn your place among the elite. Every course completed brings you closer to mastery. Fuel your journey—one badge at a time." | trans }}
                         </p>
                     </div>
                 </div>
@@ -53,15 +53,14 @@
 
             <!-- Mission Levels -->
             <div class="space-y-4 mission-levels">
-                <h3 class="mb-4 font-semibold tracking-normal sktext-md lg:sktext-md-lg">Mission Levels</h3>
-
+                {# <h3 class="mb-4 font-semibold tracking-normal sktext-md lg:sktext-md-lg">Mission Levels</h3> #}
                 {% for level in missionData.levels %}
                     <div
                         class="level-card level-card_{{ level.status }} {{ level.status == 'completed' ? 'border-green-200 bg-green-50' : '' }} {{ level.status == 'in_progress' ? 'border-blue-200 bg-blue-50' : '' }} {{ level.status == 'locked' ? '_border-gray-200 _opacity-60' : '' }}"
                     >
                         <div class="flex items-center gap-4">
                             <!-- Level Icon -->
-                            <div class="relative flex-shrink-0 w-12 h-12 level-icon">
+                            <div class="relative flex-shrink-0 hidden w-12 h-12 level-icon">
                                 <img
                                     src="{{ level.icon | media }}"
                                     alt="{{ level.label }}"
@@ -91,10 +90,10 @@
                             </div>
 
                             <!-- Level Info -->
-                            <div class="flex-1 level-info">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-x-2">
-                                        <div class="flex items-center gap-x-1">
+                            <div class="flex-1 text-center level-info">
+                                <div class="flex items-center mb-2">
+                                    <div class="flex items-center justify-center mx-auto gap-x-2">
+                                        <div class="flex items-center w-full gap-x-1">
                                             {% for i in 1..level.level %}
                                                 <img
                                                     src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
@@ -103,7 +102,7 @@
                                                 />
                                             {% endfor %}
                                         </div>
-                                        <h4 class="h7 {{ level.status == 'locked' ? 'text-gray-400' : '' }}">
+                                        <h4 class="h7 {{ level.status == 'locked' ? '_text-gray-400' : '' }}">
                                             {{ level.label }}
                                             {# {% if level.level == 999 %}
                                                 <span
@@ -117,16 +116,11 @@
                                             {% endif %} #}
                                         </h4>
                                     </div>
-
-                                    <!-- Points -->
-                                    {% if level.points > 0 %}
-                                        <span class="text-sm font-medium text-yellow-600">{{ level.points }} 💎</span>
-                                    {% endif %}
                                 </div>
 
                                 <!-- Level Description -->
                                 <p
-                                    class="text-sm text-gray-600 mb-3 {{ level.status == 'locked' ? 'text-gray-400' : '' }}"
+                                    class="sktext-xxs lg:sktext-xxs-lg mb-3 {{ level.status == 'locked' ? '_text-gray-400' : '' }}"
                                 >
                                     {{ level.description }}
                                 </p>
@@ -144,13 +138,14 @@
                                 {% endif %}
                                 <div class="level-progress">
                                     <div class="flex items-center justify-between mb-1">
-                                        <span class="text-xs text-gray-600">Progress</span>
-                                        <span class="text-xs font-medium">
-                                            {% if level.status == 'completed' %}
+                                        <span class="font-semibold sktext-xxs lg:sktext-xxs-lg">{{'Progress' | trans }}</span>
+                                        <span class="font-medium sktext-xxs lg:sktext-xxs-lg">
+                                            {# {% if level.status == 'completed' %}
                                                 Completed ✅
                                             {% else %}
                                                 {{ level.progress }}%
-                                            {% endif %}
+                                            {% endif %} #}
+                                            {{ level.progress }}%
                                         </span>
                                     </div>
                                     <div class="h-4 bg-gray-200 border rounded-full border-brand-dark progress-bar">
@@ -160,6 +155,19 @@
                                         ></div>
                                     </div>
                                 </div>
+                                <!-- Points -->
+                                {% if level.points > 0 %}
+                                    <div class="flex items-center justify-center w-full mt-4 gap-x-2">
+                                        <span class="shrink-0 sktext-xxs lg:sktext-xxs-lg"
+                                            >{{ 'Reward:' | trans }}</span>
+                                            <span
+                                                ><img
+                                                    class="w-auto h-6 shrink-0"
+                                                    src="{{ 'assets/images/scoreboard/diamonds.png' | theme }}" /></span
+                                            ><span class="shrink-0 sktext-xxs lg:sktext-xxs-lg">{{ level.points }}</span>
+                                        </span>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

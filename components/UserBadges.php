@@ -224,6 +224,14 @@ class UserBadges extends ComponentBase
             $achievedLevel = 999;
         }
 
+        $levelLabel = '-';
+
+        if ($achievedLevel > 0) {
+            $levelLabel = $mission->getLevelLabel($achievedLevel);
+        } else {
+            $levelLabel = '-';
+        }
+
         // Get user progress record for total values
         $userProgressRecord = \Voilaah\Gamify\Models\UserMissionProgress::where('user_id', $user->id)
             ->where('mission_code', $mission->getCode())
@@ -239,6 +247,7 @@ class UserBadges extends ComponentBase
             'mission_icon' => $mission->getIcon(),
             'current_level' => $currentLevel,
             'achieved_level' => $achievedLevel,
+            'level_label' => $levelLabel,
             'is_completed' => $progress['completed'],
             'total_progress' => $totalValue,
             'levels' => []

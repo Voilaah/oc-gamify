@@ -37,11 +37,13 @@
                                     <div
                                         class="absolute flex items-center justify-center px-2 py-1 transform -translate-x-1/2 bg-black-800 rounded-[20px] -bottom-4 left-1/2"
                                     >
-                                        <img
-                                            src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
-                                            alt="Level {{ badge.achieved_level }}"
-                                            class="w-[10px] h-[14px]"
-                                        />
+                                        {% for i in 1..badge.achieved_level %}
+                                            <img
+                                                src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
+                                                alt="Level {{ badge.achieved_level }}"
+                                                class="w-[10px] h-[14px]"
+                                            />
+                                        {% endfor %}
                                         {# {% if badge.achieved_level > 1 %}
                                             <span
                                                 class="absolute flex items-center justify-center w-4 h-4 text-xs font-bold text-white transform -translate-x-1/2 bg-red-500 rounded-full -bottom-1 left-1/2"
@@ -52,7 +54,7 @@
                                 {% endif %}
 
                                 <!-- Status Indicator -->
-                                {% if not badge.has_started %}
+                                {# {% if not badge.has_started %}
                                     <div class="hidden status-indicator not-started">Start</div>
                                     {% elseif badge.is_completed %}
                                     <div class="hidden status-indicator completed">🏆</div>
@@ -62,7 +64,7 @@
                                     <div class="hidden status-indicator progress">
                                         {{ badge.progress }}/{{ badge.goal }}
                                     </div>
-                                {% endif %}
+                                {% endif %} #}
                             </div>
                         </div>
 
@@ -103,6 +105,7 @@
                                     data-request="userBadges::onFetchMission"
                                     data-request-data="{id: '{{ badge.mission_code }}'}"
                                     data-request-update="{ 'userBadges::modal-mission-info': '#siteModalContent' }"
+                                    data-request-success="document.getElementById('siteModal').style.setProperty('--bs-modal-width','600px');"
                                     data-bs-toggle="modal"
                                     data-bs-target="#siteModal"
                                 >

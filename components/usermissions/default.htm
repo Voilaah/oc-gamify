@@ -1,6 +1,6 @@
 <div class="max-w-full user_missions">
     <div class="mb-4 h7">{{ 'Missions' | trans }}</div>
-    <div class="p-4 border rounded-lg lg:p-6 border-black-100">
+    <div class="p-4 border rounded-lg lg:p-4 border-black-100">
         <div class="mission-group-list">
             {% for mission in missions %}
                 <div class="relative achievement-mission">
@@ -17,7 +17,7 @@
                                     class="mx-auto mb-1 leading-none sktext-xxs lg:sktext-xxs-lg"
                                 />
                                 <div class="text-[10px] font-bold leading-none text-wrap max-w-12">
-                                    {{ mission.getLevelLabel(mission.progress.currentLevel) | trans }}
+                                    {# {{ mission.getLevelLabel(mission.progress.currentLevel) | trans }} #}
                                 </div>
                             </div>
                         </div>
