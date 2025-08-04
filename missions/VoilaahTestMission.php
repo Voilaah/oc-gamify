@@ -128,7 +128,7 @@ class VoilaahTestMission extends BaseMission
      */
     public function isEnabled(): bool
     {
-        return true;
+        return false;
     }
 
     /**

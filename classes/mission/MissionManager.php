@@ -108,7 +108,7 @@ class MissionManager
     {
         $levels = $mission->getLevels();
         $badgeModel = config('gamify.badge_model');
-        
+
         foreach ($levels as $level => $config) {
             // Create level badge
             $badgeModel::firstOrCreate([

@@ -2,7 +2,7 @@
 
 namespace Voilaah\Gamify;
 
-use Backend, Event, App;
+use Backend, Event, App, Schema;
 use System\Classes\PluginBase;
 use Illuminate\Support\Collection;
 use Voilaah\Gamify\Events\BadgesAwarded;
@@ -103,22 +103,24 @@ class Plugin extends PluginBase
         \App::booted(function () {
             $manager = app('gamify.missions');
 
-            // Register all missions
-            // $manager->register(new \Voilaah\Gamify\Missions\CourseExplorerMissionTest());
-            $manager->register(new \Voilaah\Gamify\Missions\VoilaahTestMission());
-            $manager->register(new \Voilaah\Gamify\Missions\KnowledgeParagonMission());
-            $manager->register(new \Voilaah\Gamify\Missions\SkillVanguardMission());
-            $manager->register(new \Voilaah\Gamify\Missions\MasterySageMission());
-            $manager->register(new \Voilaah\Gamify\Missions\LearningEpicMission());
-            $manager->register(new \Voilaah\Gamify\Missions\FeedbackMaestroMission());
-            $manager->register(new \Voilaah\Gamify\Missions\SteadfastMonarchMission());
-            $manager->register(new \Voilaah\Gamify\Missions\CertificationVanguardMission());
+            if (Schema::hasTable("voilaah_gamify_missions")) {
+                // Register all missions
+                // $manager->register(new \Voilaah\Gamify\Missions\CourseExplorerMissionTest());
+                $manager->register(new \Voilaah\Gamify\Missions\VoilaahTestMission());
+                $manager->register(new \Voilaah\Gamify\Missions\KnowledgeParagonMission());
+                $manager->register(new \Voilaah\Gamify\Missions\SkillVanguardMission());
+                $manager->register(new \Voilaah\Gamify\Missions\MasterySageMission());
+                $manager->register(new \Voilaah\Gamify\Missions\LearningEpicMission());
+                $manager->register(new \Voilaah\Gamify\Missions\FeedbackMaestroMission());
+                $manager->register(new \Voilaah\Gamify\Missions\SteadfastMonarchMission());
+                $manager->register(new \Voilaah\Gamify\Missions\CertificationVanguardMission());
 
-            // Fire this AFTER all plugins booted, allows other plugin to register Mission
-            Event::fire('voilaah.gamify.registerMissions', [$manager]);
+                // Fire this AFTER all plugins booted, allows other plugin to register Mission
+                Event::fire('voilaah.gamify.registerMissions', [$manager]);
 
-            // Now register event listeners
-            $manager->registerEventListeners();
+                // Now register event listeners
+                $manager->registerEventListeners();
+            }
 
         });
 

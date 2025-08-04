@@ -1,5 +1,5 @@
 <!-- Mission Info Modal -->
-<div class="modal-content" style="--bs-modal-border-radius:2.5rem; --bs-modal-header-padding-x: -1.25rem;" id="mission-modal">
+<div class="modal-content" style="--bs-modal-border-radius:2.5rem; --bs-modal-header-padding-x: -1.25rem; --bs-modal-margin: 6.5rem;" id="mission-modal">
     {# <div class="modal-header">
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </div> #}
@@ -20,6 +20,19 @@
                             alt="{{ missionData.mission_name }}"
                             class="object-contain w-full h-full"
                         />
+
+                        <!-- Fire Icon based on achieved level -->
+                        {% if missionData.achieved_level > 0 %}
+                            <div class="absolute flex items-center justify-center px-2 py-1 transform -translate-x-1/2 bg-black-800 rounded-[20px] -bottom-4 left-1/2">
+                                {% for i in 1..missionData.achieved_level %}
+                                    <img
+                                        src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
+                                        alt="Level {{ badge.achieved_level }}"
+                                        class="w-[10px] h-[14px]"
+                                    />
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="flex-1 mission-info">
                         <h2 class="mb-2 h5">{{ missionData.mission_name }}</h2>
@@ -93,7 +106,7 @@
                             <div class="flex-1 text-center level-info">
                                 <div class="flex items-center mb-2">
                                     <div class="flex items-center justify-center mx-auto gap-x-2">
-                                        <div class="flex items-center w-full gap-x-1">
+                                        <div class="flex items-center flex-1 w-full gap-x-1">
                                             {% for i in 1..level.level %}
                                                 <img
                                                     src="{{ '/plugins/voilaah/gamify/assets/images/fire.png' }}"
@@ -203,10 +216,7 @@
 </div>
 
 <style>
-    .mission-modal-content {
-        max-height: 95vh;
-        overflow-y: auto;
-    }
+
 
     .level-card {
         transition: all 0.2s ease;
