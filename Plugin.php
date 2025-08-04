@@ -106,7 +106,7 @@ class Plugin extends PluginBase
             if (Schema::hasTable("voilaah_gamify_missions")) {
                 // Register all missions
                 // $manager->register(new \Voilaah\Gamify\Missions\CourseExplorerMissionTest());
-                $manager->register(new \Voilaah\Gamify\Missions\VoilaahTestMission());
+                // $manager->register(new \Voilaah\Gamify\Missions\VoilaahTestMission());
                 $manager->register(new \Voilaah\Gamify\Missions\KnowledgeParagonMission());
                 $manager->register(new \Voilaah\Gamify\Missions\SkillVanguardMission());
                 $manager->register(new \Voilaah\Gamify\Missions\MasterySageMission());
